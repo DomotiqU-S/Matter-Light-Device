@@ -22,7 +22,7 @@ You should be setup to compile the program.
 
 ### Device type
 
-The default light type is dimmable light. You can change the type on line 47 in the file [app_main](./main/app_main.cpp).
+The default light type is dimmable light. You can change the type on line 47 in the file [app_main](./main/app_main.cpp?plain=1#L47).
 There are four types of light:
 | Type   |      Variable type      |
 |----------|:-------------:|
