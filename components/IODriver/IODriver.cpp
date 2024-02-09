@@ -6,7 +6,8 @@
 
 #include <device.h>
 #include <esp_matter.h>
-#include <led_driver.h>
+//#include <led_driver.h>
+#include "LightDriver.hpp"
 
 using namespace chip::app::Clusters;
 using namespace esp_matter;
@@ -14,34 +15,36 @@ using namespace esp_matter;
 static const char *TAG = "app_driver";
 extern uint16_t light_endpoint_id;
 
+LightDriver light_driver(GPIO_NUM_16, 0);
+
 /* Do any conversions/remapping for the actual value here */
 static esp_err_t app_driver_light_set_power(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
-    return led_driver_set_power(handle, val->val.b);
+    return light_driver.set_power(val->val.b); //led_driver_set_power(handle, val->val.b);
 }
 
 static esp_err_t app_driver_light_set_brightness(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
     int value = REMAP_TO_RANGE(val->val.u8, MATTER_BRIGHTNESS, STANDARD_BRIGHTNESS);
-    return led_driver_set_brightness(handle, value);
+    return light_driver.set_brightness((uint8_t)value); //led_driver_set_brightness(handle, value);
 }
 
 static esp_err_t app_driver_light_set_hue(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
     int value = REMAP_TO_RANGE(val->val.u8, MATTER_HUE, STANDARD_HUE);
-    return led_driver_set_hue(handle, value);
+    return light_driver.set_hue((uint16_t)value); //led_driver_set_hue(handle, value);
 }
 
 static esp_err_t app_driver_light_set_saturation(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
     int value = REMAP_TO_RANGE(val->val.u8, MATTER_SATURATION, STANDARD_SATURATION);
-    return led_driver_set_saturation(handle, value);
+    return light_driver.set_saturation((uint8_t)value); //led_driver_set_saturation(handle, value);
 }
 
 static esp_err_t app_driver_light_set_temperature(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
     uint32_t value = REMAP_TO_RANGE_INVERSE(val->val.u16, STANDARD_TEMPERATURE_FACTOR);
-    return led_driver_set_temperature(handle, value);
+    return light_driver.set_temperature(value); //led_driver_set_temperature(handle, value);
 }
 
 static void app_driver_button_toggle_cb(void *arg, void *data)
@@ -97,6 +100,7 @@ esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_
     return err;
 }
 
+
 esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
 {
     esp_err_t err = ESP_OK;
@@ -148,8 +152,7 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
 app_driver_handle_t app_driver_light_init()
 {
     /* Initialize led */
-    led_driver_config_t config = led_driver_get_config();
-    led_driver_handle_t handle = led_driver_init(&config);
+    led_driver_handle_t handle = light_driver.init();
     return (app_driver_handle_t)handle;
 }
 

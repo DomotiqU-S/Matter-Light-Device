@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"bitset": "cpp",
+			"__tree": "cpp",
+			"set": "cpp"
+		}
+	}
+}
