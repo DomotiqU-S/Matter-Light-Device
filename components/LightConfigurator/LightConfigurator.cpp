@@ -6,14 +6,16 @@ endpoint_t* configureLight(extended_color_light::config_t &light, uint8_t flags,
 {
     free(priv_endpoint);
 
-    light.on_off.on_off = false;
+    light.on_off.on_off = true;
     light.on_off.lighting.start_up_on_off = nullptr;
     light.level_control.current_level = 100;
     light.level_control.lighting.start_up_current_level = 100;
     light.color_control.color_mode = (uint8_t)(uint8_t)ColorControl::ColorMode::kCurrentXAndCurrentY;
     light.color_control.enhanced_color_mode = (uint8_t)ColorControl::ColorMode::kCurrentXAndCurrentY;
-    light.color_control.xy.current_x = 0x616b;
-    light.color_control.xy.current_y = 0x607d;
+    light.color_control.xy.current_x = 0x400;
+    light.color_control.xy.current_y = 0x400;
+    light.color_control.color_temperature.color_temp_physical_min_mireds = 2700;
+    light.color_control.color_temperature.color_temp_physical_max_mireds = 6500;
 
     priv_endpoint =  extended_color_light::create(node, &light, flags, priv_data);
 
@@ -36,8 +38,7 @@ endpoint_t* configureLight(dimmable_light::config_t &light, uint8_t flags, void 
 {
     free(priv_endpoint);
 
-    light.on_off.on_off = false;
-    light.on_off.on_off = false;
+    light.on_off.on_off = true;
     light.on_off.lighting.start_up_on_off = nullptr;
     light.level_control.current_level = 100;
     light.level_control.lighting.start_up_current_level = 100;
@@ -58,7 +59,10 @@ endpoint_t* configureLight(color_temperature_light::config_t &light, uint8_t fla
     light.level_control.lighting.start_up_current_level = 100;
     light.color_control.color_mode = (uint8_t)ColorControl::ColorMode::kColorTemperature;
     light.color_control.enhanced_color_mode = (uint8_t)ColorControl::ColorMode::kColorTemperature;
-    light.color_control.color_temperature.startup_color_temperature_mireds = nullptr;
+    light.color_control.color_temperature.startup_color_temperature_mireds = 4600;
+    light.color_control.color_temperature.color_temp_physical_min_mireds = 2700;
+    light.color_control.color_temperature.color_temp_physical_max_mireds = 6500;
+    light.color_control.color_temperature.color_temperature_mireds = 4600;
 
     priv_endpoint = color_temperature_light::create(node, &light, flags, priv_data);
 

@@ -9,21 +9,16 @@
 #include <esp_err.h>
 #include <esp_log.h>
 #include <nvs_flash.h>
-
 #include <esp_matter.h>
 #include <esp_matter_console.h>
 #include <esp_matter_ota.h>
-
-//#include <app_priv.h>
 #include "IODriver.hpp"
 #include <app_reset.h>
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #include <platform/ESP32/OpenthreadLauncher.h>
 #endif
-
 #include <app/server/CommissioningWindowManager.h>
 #include <app/server/Server.h>
-
 #include "LightConfigurator.hpp"
 
 static const char *TAG = "app_main";
@@ -44,9 +39,9 @@ static const char *s_decryption_key = decryption_key_start;
 static const uint16_t s_decryption_key_len = decryption_key_end - decryption_key_start;
 #endif // CONFIG_ENABLE_ENCRYPTED_OTA
 
-dimmable_light::config_t light_config;
+//dimmable_light::config_t light_config;
 //on_off_light::config_t light_config;
-//color_temperature_light::config_t light_config;
+color_temperature_light::config_t light_config;
 //extended_color_light::config_t light_config;
 
 static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
@@ -159,8 +154,6 @@ extern "C" void app_main()
 
     /* Initialize driver */
     app_driver_handle_t light_handle = app_driver_light_init();
-    app_driver_handle_t button_handle = app_driver_button_init();
-    app_reset_button_register(button_handle);
 
     /* Create a Matter node and add the mandatory Root Node device type on endpoint 0 */
     node::config_t node_config;

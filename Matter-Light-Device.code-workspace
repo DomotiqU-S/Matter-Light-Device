@@ -1,7 +1,8 @@
 {
 	"folders": [
 		{
-			"path": "."
+			"name": "TempSTM32",
+			"path": "../../PlatformIO/Projects/TempSTM32"
 		}
 	],
 	"settings": {

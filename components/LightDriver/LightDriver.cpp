@@ -1,23 +1,18 @@
 #include "LightDriver.hpp"
 
-LightDriver::LightDriver(uint8_t gpio, uint8_t channel)
-{
-    this->gpio = gpio;
-    this->channel = channel;
-}
-
 LightDriver::~LightDriver()
 {
 }
 
 esp_err_t LightDriver::set_power(bool power)
 {
-    return ESP_OK;
+    ESP_LOGE("LightDriver", "power: %d", power);
+    return led.switchState(power);
 }
 
 esp_err_t LightDriver::set_brightness(uint8_t brightness)
 {
-    return ESP_OK;
+    return led.setIntensity(brightness);
 }
 
 esp_err_t LightDriver::set_hue(uint16_t hue)
@@ -32,7 +27,7 @@ esp_err_t LightDriver::set_saturation(uint8_t saturation)
 
 esp_err_t LightDriver::set_temperature(uint32_t temperature)
 {
-    return ESP_OK;
+    return led.setTemperature((uint16_t)temperature);
 }
 
 led_driver_handle_t LightDriver::init()

@@ -2,6 +2,7 @@
 #define LIGHT_DRIVER_HPP
 
 #include <esp_err.h>
+#include "led_driver.hpp"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -10,10 +11,15 @@ typedef void *led_driver_handle_t;
 class LightDriver
 {
 private:
-    uint8_t gpio;
-    uint8_t channel;
+    uint8_t gpio_warm;
+    uint8_t gpio_cold;
+
+    LedDriver led;
 public:
-    LightDriver(uint8_t gpio, uint8_t channel);
+    LightDriver(uint8_t gpio_warm, uint8_t gpio_cold) : led(gpio_warm, gpio_cold) {
+        this->gpio_warm = gpio_warm;
+        this->gpio_cold = gpio_cold;
+    }
     ~LightDriver();
     led_driver_handle_t init();
     esp_err_t set_power(bool power);

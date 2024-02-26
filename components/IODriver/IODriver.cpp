@@ -1,32 +1,31 @@
-#include "IODriver.hpp"
-
+#include "driver/gpio.h"
 #include <esp_log.h>
+#include "IODriver.hpp"
+#include <esp_matter.h>
+#include "LightDriver.hpp"
 #include <stdlib.h>
 #include <string.h>
-
-#include <device.h>
-#include <esp_matter.h>
-//#include <led_driver.h>
-#include "LightDriver.hpp"
 
 using namespace chip::app::Clusters;
 using namespace esp_matter;
 
-static const char *TAG = "app_driver";
+static const char *TAG = "io_driver";
 extern uint16_t light_endpoint_id;
 
-LightDriver light_driver(GPIO_NUM_16, 0);
+LightDriver light_driver(5, 6);
 
 /* Do any conversions/remapping for the actual value here */
 static esp_err_t app_driver_light_set_power(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
-    return light_driver.set_power(val->val.b); //led_driver_set_power(handle, val->val.b);
+    ESP_LOGE(TAG, "power: %d", val->val.b);
+    return light_driver.set_power(val->val.b);
 }
 
 static esp_err_t app_driver_light_set_brightness(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
     int value = REMAP_TO_RANGE(val->val.u8, MATTER_BRIGHTNESS, STANDARD_BRIGHTNESS);
-    return light_driver.set_brightness((uint8_t)value); //led_driver_set_brightness(handle, value);
+    ESP_LOGE(TAG, "brightness: %d", value);
+    return light_driver.set_brightness((uint16_t)value); //led_driver_set_brightness(handle, value);
 }
 
 static esp_err_t app_driver_light_set_hue(led_driver_handle_t handle, esp_matter_attr_val_t *val)
@@ -44,25 +43,8 @@ static esp_err_t app_driver_light_set_saturation(led_driver_handle_t handle, esp
 static esp_err_t app_driver_light_set_temperature(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
     uint32_t value = REMAP_TO_RANGE_INVERSE(val->val.u16, STANDARD_TEMPERATURE_FACTOR);
-    return light_driver.set_temperature(value); //led_driver_set_temperature(handle, value);
-}
-
-static void app_driver_button_toggle_cb(void *arg, void *data)
-{
-    ESP_LOGI(TAG, "Toggle button pressed");
-    uint16_t endpoint_id = light_endpoint_id;
-    uint32_t cluster_id = OnOff::Id;
-    uint32_t attribute_id = OnOff::Attributes::OnOff::Id;
-
-    node_t *node = node::get();
-    endpoint_t *endpoint = endpoint::get(node, endpoint_id);
-    cluster_t *cluster = cluster::get(endpoint, cluster_id);
-    attribute_t *attribute = attribute::get(cluster, attribute_id);
-
-    esp_matter_attr_val_t val = esp_matter_invalid(NULL);
-    attribute::get_val(attribute, &val);
-    val.val.b = !val.val.b;
-    attribute::update(endpoint_id, cluster_id, attribute_id, &val);
+    ESP_LOGE(TAG, "temperature: %d", val->val.u16);
+    return light_driver.set_temperature(val->val.u16); //led_driver_set_temperature(handle, value);
 }
 
 esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_t endpoint_id, uint32_t cluster_id,
@@ -88,6 +70,8 @@ esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_
                 err = app_driver_light_set_brightness(handle, val);
             }
         } else if (cluster_id == ColorControl::Id) {
+            ESP_LOGE(TAG, "ColorControl::Id");
+            ESP_LOGE(TAG, "attribute_id: %lu", attribute_id);
             if (attribute_id == ColorControl::Attributes::CurrentHue::Id) {
                 err = app_driver_light_set_hue(handle, val);
             } else if (attribute_id == ColorControl::Attributes::CurrentSaturation::Id) {
@@ -152,15 +136,7 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
 app_driver_handle_t app_driver_light_init()
 {
     /* Initialize led */
+    // TODO: Add LED driver 
     led_driver_handle_t handle = light_driver.init();
-    return (app_driver_handle_t)handle;
-}
-
-app_driver_handle_t app_driver_button_init()
-{
-    /* Initialize button */
-    button_config_t config = button_driver_get_config();
-    button_handle_t handle = iot_button_create(&config);
-    iot_button_register_cb(handle, BUTTON_PRESS_DOWN, app_driver_button_toggle_cb, NULL);
     return (app_driver_handle_t)handle;
 }

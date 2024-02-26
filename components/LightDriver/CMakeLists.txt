@@ -1,2 +1,3 @@
 idf_component_register(SRCS "LightDriver.cpp"
-                    INCLUDE_DIRS "include")
+                    INCLUDE_DIRS "include"
+                    REQUIRES LEDDriver)
