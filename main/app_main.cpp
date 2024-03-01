@@ -9,20 +9,25 @@
 #include <esp_err.h>
 #include <esp_log.h>
 #include <nvs_flash.h>
+
 #include <esp_matter.h>
 #include <esp_matter_console.h>
 #include <esp_matter_ota.h>
-#include "IODriver.hpp"
+
+#include "CustomEndpoint.hpp"
+
+#include <app_priv.h>
 #include <app_reset.h>
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #include <platform/ESP32/OpenthreadLauncher.h>
 #endif
+
 #include <app/server/CommissioningWindowManager.h>
 #include <app/server/Server.h>
-#include "LightConfigurator.hpp"
 
 static const char *TAG = "app_main";
 uint16_t light_endpoint_id = 0;
+uint16_t distributed_endpoint_id = 0;
 
 using namespace esp_matter;
 using namespace esp_matter::attribute;
@@ -39,14 +44,10 @@ static const char *s_decryption_key = decryption_key_start;
 static const uint16_t s_decryption_key_len = decryption_key_end - decryption_key_start;
 #endif // CONFIG_ENABLE_ENCRYPTED_OTA
 
-//dimmable_light::config_t light_config;
-//on_off_light::config_t light_config;
-color_temperature_light::config_t light_config;
-//extended_color_light::config_t light_config;
-
 static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
 {
-    switch (event->Type) {
+    switch (event->Type)
+    {
     case chip::DeviceLayer::DeviceEventType::kInterfaceIpAddressChanged:
         ESP_LOGI(TAG, "Interface IP Address changed");
         break;
@@ -76,27 +77,27 @@ static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
         break;
 
     case chip::DeviceLayer::DeviceEventType::kFabricRemoved:
+    {
+        ESP_LOGI(TAG, "Fabric removed successfully");
+        if (chip::Server::GetInstance().GetFabricTable().FabricCount() == 0)
         {
-            ESP_LOGI(TAG, "Fabric removed successfully");
-            if (chip::Server::GetInstance().GetFabricTable().FabricCount() == 0)
+            chip::CommissioningWindowManager &commissionMgr = chip::Server::GetInstance().GetCommissioningWindowManager();
+            constexpr auto kTimeoutSeconds = chip::System::Clock::Seconds16(k_timeout_seconds);
+            if (!commissionMgr.IsCommissioningWindowOpen())
             {
-                chip::CommissioningWindowManager & commissionMgr = chip::Server::GetInstance().GetCommissioningWindowManager();
-                constexpr auto kTimeoutSeconds = chip::System::Clock::Seconds16(k_timeout_seconds);
-                if (!commissionMgr.IsCommissioningWindowOpen())
+                /* After removing last fabric, this example does not remove the Wi-Fi credentials
+                 * and still has IP connectivity so, only advertising on DNS-SD.
+                 */
+                CHIP_ERROR err = commissionMgr.OpenBasicCommissioningWindow(kTimeoutSeconds,
+                                                                            chip::CommissioningWindowAdvertisement::kDnssdOnly);
+                if (err != CHIP_NO_ERROR)
                 {
-                    /* After removing last fabric, this example does not remove the Wi-Fi credentials
-                     * and still has IP connectivity so, only advertising on DNS-SD.
-                     */
-                    CHIP_ERROR err = commissionMgr.OpenBasicCommissioningWindow(kTimeoutSeconds,
-                                                    chip::CommissioningWindowAdvertisement::kDnssdOnly);
-                    if (err != CHIP_NO_ERROR)
-                    {
-                        ESP_LOGE(TAG, "Failed to open commissioning window, err:%" CHIP_ERROR_FORMAT, err.Format());
-                    }
+                    ESP_LOGE(TAG, "Failed to open commissioning window, err:%" CHIP_ERROR_FORMAT, err.Format());
                 }
             }
-        break;
         }
+        break;
+    }
 
     case chip::DeviceLayer::DeviceEventType::kFabricWillBeRemoved:
         ESP_LOGI(TAG, "Fabric will be removed");
@@ -136,7 +137,8 @@ static esp_err_t app_attribute_update_cb(attribute::callback_type_t type, uint16
 {
     esp_err_t err = ESP_OK;
 
-    if (type == PRE_UPDATE) {
+    if (type == PRE_UPDATE)
+    {
         /* Driver update */
         app_driver_handle_t driver_handle = (app_driver_handle_t)priv_data;
         err = app_driver_attribute_update(driver_handle, endpoint_id, cluster_id, attribute_id, val);
@@ -153,25 +155,44 @@ extern "C" void app_main()
     nvs_flash_init();
 
     /* Initialize driver */
-    app_driver_handle_t light_handle = app_driver_light_init();
+    // app_driver_handle_t light_handle = app_driver_light_init();
+    // app_driver_handle_t button_handle = app_driver_button_init();
+    // app_reset_button_register(button_handle);
 
     /* Create a Matter node and add the mandatory Root Node device type on endpoint 0 */
     node::config_t node_config;
     node_t *node = node::create(&node_config, app_attribute_update_cb, app_identification_cb);
 
-    endpoint_t *endpoint = configureLight(light_config, ENDPOINT_FLAG_NONE, light_handle, node);
+    // extended_color_light::config_t light_config;
+    // light_config.on_off.on_off = DEFAULT_POWER;
+    // light_config.on_off.lighting.start_up_on_off = nullptr;
+    // light_config.level_control.current_level = DEFAULT_BRIGHTNESS;
+    // light_config.level_control.lighting.start_up_current_level = DEFAULT_BRIGHTNESS;
+    // light_config.color_control.color_mode = (uint8_t)ColorControl::ColorMode::kColorTemperature;
+    // light_config.color_control.enhanced_color_mode = (uint8_t)ColorControl::ColorMode::kColorTemperature;
+    // light_config.color_control.color_temperature.startup_color_temperature_mireds = nullptr;
+    // endpoint_t *endpoint_1 = extended_color_light::create(node, &light_config, ENDPOINT_FLAG_NONE, light_handle);
+
+    distributed_device::config_t distributed_config;
+    distributed_config.distributed_device = cluster::distributed_device::config_t();
+
+    endpoint_t *endpoint_2 = distributed_device::create(node, &distributed_config, ENDPOINT_FLAG_NONE, nullptr);
 
     /* These node and endpoint handles can be used to create/add other endpoints and clusters. */
-    if (!node || !endpoint) {
+    if (!node || !endpoint_2)
+    {
         ESP_LOGE(TAG, "Matter node creation failed");
     }
 
-    light_endpoint_id = endpoint::get_id(endpoint);
-    ESP_LOGI(TAG, "Light created with endpoint_id %d", light_endpoint_id);
+    // light_endpoint_id = endpoint::get_id(endpoint_1);
+    // ESP_LOGI(TAG, "Light created with endpoint_id %d", light_endpoint_id);
+
+    distributed_endpoint_id = endpoint::get_id(endpoint_2);
+    ESP_LOGI(TAG, "Distributed device created with endpoint_id %d", distributed_endpoint_id);
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
     /* Set OpenThread platform config */
-    esp_openthread_platform_config_t config = {/
+    esp_openthread_platform_config_t config = {
         .radio_config = ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG(),
         .host_config = ESP_OPENTHREAD_DEFAULT_HOST_CONFIG(),
         .port_config = ESP_OPENTHREAD_DEFAULT_PORT_CONFIG(),
@@ -181,16 +202,18 @@ extern "C" void app_main()
 
     /* Matter start */
     err = esp_matter::start(app_event_cb);
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         ESP_LOGE(TAG, "Matter start failed: %d", err);
     }
 
     /* Starting driver with default values */
-    app_driver_light_set_defaults(light_endpoint_id);
+    // app_driver_light_set_defaults(light_endpoint_id);
 
 #if CONFIG_ENABLE_ENCRYPTED_OTA
     err = esp_matter_ota_requestor_encrypted_init(s_decryption_key, s_decryption_key_len);
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         ESP_LOGE(TAG, "Failed to initialized the encrypted OTA, err: %d", err);
     }
 #endif // CONFIG_ENABLE_ENCRYPTED_OTA
