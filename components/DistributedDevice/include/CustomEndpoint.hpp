@@ -25,6 +25,7 @@ namespace esp_matter
                 // cluster::descriptor::config_t descriptor;
                 // cluster::identify::config_t identify;
                 cluster::distributed_device::config_t distributed_device;
+                cluster::on_off::config_t on_off;
             } config_t;
             uint32_t get_device_type_id();
             uint8_t get_device_type_version();

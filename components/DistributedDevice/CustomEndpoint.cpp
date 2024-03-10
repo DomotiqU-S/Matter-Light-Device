@@ -42,7 +42,7 @@ namespace esp_matter
                 // cluster::descriptor::create(endpoint, &(config->descriptor), CLUSTER_FLAG_SERVER);
                 // cluster_t *identify_cluster = cluster::identify::create(endpoint, &(config->identify), CLUSTER_FLAG_SERVER);
                 // cluster::identify::command::create_trigger_effect(identify_cluster);
-
+                cluster::on_off::create(endpoint, &(config->on_off), CLUSTER_FLAG_SERVER, cluster::on_off::feature::lighting::get_id());
                 cluster::distributed_device::create(endpoint, &(config->distributed_device), CLUSTER_FLAG_SERVER);
 
                 return ESP_OK;
