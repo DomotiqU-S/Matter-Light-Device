@@ -155,39 +155,24 @@ extern "C" void app_main()
     nvs_flash_init();
 
     /* Initialize driver */
-    // app_driver_handle_t light_handle = app_driver_light_init();
-    // app_driver_handle_t button_handle = app_driver_button_init();
-    // app_reset_button_register(button_handle);
+    app_driver_handle_t distributed_device_handle = app_driver_distributed_device_init();
 
     /* Create a Matter node and add the mandatory Root Node device type on endpoint 0 */
     node::config_t node_config;
     node_t *node = node::create(&node_config, app_attribute_update_cb, app_identification_cb);
 
-    // extended_color_light::config_t light_config;
-    // light_config.on_off.on_off = DEFAULT_POWER;
-    // light_config.on_off.lighting.start_up_on_off = nullptr;
-    // light_config.level_control.current_level = DEFAULT_BRIGHTNESS;
-    // light_config.level_control.lighting.start_up_current_level = DEFAULT_BRIGHTNESS;
-    // light_config.color_control.color_mode = (uint8_t)ColorControl::ColorMode::kColorTemperature;
-    // light_config.color_control.enhanced_color_mode = (uint8_t)ColorControl::ColorMode::kColorTemperature;
-    // light_config.color_control.color_temperature.startup_color_temperature_mireds = nullptr;
-    // endpoint_t *endpoint_1 = extended_color_light::create(node, &light_config, ENDPOINT_FLAG_NONE, light_handle);
-
     distributed_device::config_t distributed_config;
     distributed_config.distributed_device = cluster::distributed_device::config_t();
 
-    endpoint_t *endpoint_2 = distributed_device::create(node, &distributed_config, ENDPOINT_FLAG_NONE, nullptr);
+    endpoint_t *endpoint = distributed_device::create(node, &distributed_config, ENDPOINT_FLAG_NONE, nullptr);
 
     /* These node and endpoint handles can be used to create/add other endpoints and clusters. */
-    if (!node || !endpoint_2)
+    if (!node || !endpoint)
     {
         ESP_LOGE(TAG, "Matter node creation failed");
     }
 
-    // light_endpoint_id = endpoint::get_id(endpoint_1);
-    // ESP_LOGI(TAG, "Light created with endpoint_id %d", light_endpoint_id);
-
-    distributed_endpoint_id = endpoint::get_id(endpoint_2);
+    distributed_endpoint_id = endpoint::get_id(endpoint);
     ESP_LOGI(TAG, "Distributed device created with endpoint_id %d", distributed_endpoint_id);
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD

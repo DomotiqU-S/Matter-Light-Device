@@ -9,6 +9,8 @@
 using namespace chip::app::Clusters;
 // using namespace esp_matter::cluster;
 
+#include "DistributedDevice.hpp"
+
 #define TAG_CUSTOM_CLUSTER "CustomCluster"
 namespace chip
 {
@@ -18,7 +20,7 @@ namespace chip
         {
             namespace DistributedDevice
             {
-                static constexpr ClusterId Id = 0x00;
+                static constexpr ClusterId Id = 0x02;
                 namespace attribute
                 {
                     namespace automations
@@ -39,7 +41,7 @@ namespace chip
                     }
                     namespace set_automations
                     {
-                        static constexpr CommandId Id = 0x03;
+                        static constexpr CommandId Id = 0x04;
                     }
                 }
 
@@ -65,6 +67,7 @@ namespace esp_matter
             esp_err_t add_automation_callback(const ConcreteCommandPath &command_path, TLVReader &tlv_data, void *opaque_ptr);
             esp_err_t remove_automation_callback(const ConcreteCommandPath &command_path, TLVReader &tlv_data, void *opaque_ptr);
             esp_err_t set_automations_callback(const ConcreteCommandPath &command_path, TLVReader &tlv_data, void *opaque_ptr);
+            // esp_err_t parse_tlv(TLVReader &tlv_data, chip::CharSpan config_value);
         }
     }
 }
