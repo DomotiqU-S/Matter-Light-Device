@@ -2,69 +2,44 @@
 
 endpoint_t* priv_endpoint;
 
-endpoint_t* configureLight(extended_color_light::config_t &light, uint8_t flags, void *priv_data, esp_matter::node_t *node)
+endpoint_t* configureLight(uint8_t flags, void *priv_data, esp_matter::node_t *node)
 {
     free(priv_endpoint);
 
-    light.on_off.on_off = true;
-    light.on_off.lighting.start_up_on_off = nullptr;
-    light.level_control.current_level = 100;
-    light.level_control.lighting.start_up_current_level = 100;
-    light.color_control.color_mode = (uint8_t)(uint8_t)ColorControl::ColorMode::kCurrentXAndCurrentY;
-    light.color_control.enhanced_color_mode = (uint8_t)ColorControl::ColorMode::kCurrentXAndCurrentY;
-    light.color_control.xy.current_x = 0x400;
-    light.color_control.xy.current_y = 0x400;
-    light.color_control.color_temperature.color_temp_physical_min_mireds = 2700;
-    light.color_control.color_temperature.color_temp_physical_max_mireds = 6500;
+    esp_matter::cluster::on_off::config_t on_off_config;
+    esp_matter::cluster::level_control::config_t level_control_config;
+    esp_matter::cluster::color_control::config_t color_control_config;
 
-    priv_endpoint =  extended_color_light::create(node, &light, flags, priv_data);
+    extended_color_light::config_t extended_color_light_config;
 
-    return priv_endpoint;
-}
+    priv_endpoint = endpoint::create(node, flags, priv_data);
+    descriptor::create(priv_endpoint, &extended_color_light_config.descriptor, CLUSTER_FLAG_SERVER);
 
-endpoint_t* configureLight(on_off_light::config_t &light, uint8_t flags, void *priv_data, esp_matter::node_t *node)
-{
-    free(priv_endpoint);
+    endpoint::add_device_type(priv_endpoint, on_off_light::get_device_type_id(), on_off_light::get_device_type_version());
+    on_off::create(priv_endpoint, &on_off_config, CLUSTER_FLAG_SERVER, on_off::feature::lighting::get_id());
 
-    light.on_off.on_off = false;
-    light.on_off.lighting.start_up_on_off = nullptr;
+    #if LIGHT_TYPE == COLOR_TEMPERATURE_TYPE_LIGHT
+        endpoint::add_device_type(priv_endpoint, color_temperature_light::get_device_type_id(), color_temperature_light::get_device_type_version());
+        endpoint::add_device_type(priv_endpoint, dimmable_light::get_device_type_id(), dimmable_light::get_device_type_version());
 
-    priv_endpoint = on_off_light::create(node, &light, flags, priv_endpoint);
+        level_control::create(priv_endpoint, &level_control_config, CLUSTER_FLAG_SERVER, level_control::feature::lighting::get_id());
+        color_control::create(priv_endpoint, &color_control_config, CLUSTER_FLAG_SERVER, color_control::feature::color_temperature::get_id());
 
-    return priv_endpoint;
-}
+    #elif LIGHT_TYPE == COLOR_TYPE_LIGHT
+        endpoint::add_device_type(priv_endpoint, extended_color_light::get_device_type_id(), extended_color_light::get_device_type_version());
+        endpoint::add_device_type(priv_endpoint, color_temperature_light::get_device_type_id(), color_temperature_light::get_device_type_version());
+        endpoint::add_device_type(priv_endpoint, dimmable_light::get_device_type_id(), dimmable_light::get_device_type_version());
 
-endpoint_t* configureLight(dimmable_light::config_t &light, uint8_t flags, void *priv_data, esp_matter::node_t *node)
-{
-    free(priv_endpoint);
+        level_control::create(priv_endpoint, &level_control_config, CLUSTER_FLAG_SERVER, level_control::feature::lighting::get_id());
+        color_control::create(priv_endpoint, &color_control_config, CLUSTER_FLAG_SERVER, color_control::feature::xy::get_id());
 
-    light.on_off.on_off = true;
-    light.on_off.lighting.start_up_on_off = nullptr;
-    light.level_control.current_level = 100;
-    light.level_control.lighting.start_up_current_level = 100;
+    #elif LIGHT_TYPE == DIMMABLE_TYPE_LIGHT
+        endpoint::add_device_type(priv_endpoint, dimmable_light::get_device_type_id(), dimmable_light::get_device_type_version());
+        level_control::create(priv_endpoint, &level_control_config, CLUSTER_FLAG_SERVER, level_control::feature::lighting::get_id());
 
-    priv_endpoint = dimmable_light::create(node, &light, flags, priv_data);
-    printf("priv_endpoint: %d\n", priv_endpoint != nullptr);
-
-    return priv_endpoint;
-}
-
-endpoint_t* configureLight(color_temperature_light::config_t &light, uint8_t flags, void *priv_data, esp_matter::node_t *node)
-{
-    free(priv_endpoint);
-
-    light.on_off.on_off = false;
-    light.on_off.lighting.start_up_on_off = nullptr;
-    light.level_control.current_level = 100;
-    light.level_control.lighting.start_up_current_level = 100;
-    light.color_control.color_mode = (uint8_t)ColorControl::ColorMode::kColorTemperature;
-    light.color_control.enhanced_color_mode = (uint8_t)ColorControl::ColorMode::kColorTemperature;
-    light.color_control.color_temperature.startup_color_temperature_mireds = 4600;
-    light.color_control.color_temperature.color_temp_physical_min_mireds = 2700;
-    light.color_control.color_temperature.color_temp_physical_max_mireds = 6500;
-    light.color_control.color_temperature.color_temperature_mireds = 4600;
-
-    priv_endpoint = color_temperature_light::create(node, &light, flags, priv_data);
+    #else
+        #error "Invalid LIGHT_TYPE"
+    #endif
 
     return priv_endpoint;
 }

@@ -42,19 +42,15 @@ static esp_err_t app_driver_light_set_saturation(led_driver_handle_t handle, esp
 
 static esp_err_t app_driver_light_set_temperature(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
+    // Remap the temperature value to the range supported by the LED driver: Matter Application Cluster Doc: 0-0xFEFF Temperature Range 
+    // Default value: 0xFA (4000K)
     uint32_t value = REMAP_TO_RANGE_INVERSE(val->val.u16, STANDARD_TEMPERATURE_FACTOR);
-    ESP_LOGE(TAG, "temperature: %d", val->val.u16);
-    return light_driver.set_temperature(val->val.u16); //led_driver_set_temperature(handle, value);
+    return light_driver.set_temperature(value);
 }
 
 esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_t endpoint_id, uint32_t cluster_id,
                                       uint32_t attribute_id, esp_matter_attr_val_t *val)
 {
-    ESP_LOGE(TAG, "app_driver_attribute_update");
-    // log the endpoint_id, cluster_id, and attribute_id
-    ESP_LOGE(TAG, "endpoint_id: %u", endpoint_id);
-    ESP_LOGE(TAG, "cluster_id: %lu", cluster_id);
-    ESP_LOGE(TAG, "attribute_id: %lu", attribute_id);
     esp_err_t err = ESP_OK;
     if (endpoint_id == light_endpoint_id) {
         led_driver_handle_t handle = (led_driver_handle_t)driver_handle;
@@ -81,6 +77,7 @@ esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_
             }
         }
     }
+    ESP_LOGI(TAG, "Endpoint ID: %d", endpoint_id);
     return err;
 }
 

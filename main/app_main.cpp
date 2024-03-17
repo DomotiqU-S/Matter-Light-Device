@@ -39,11 +39,6 @@ static const char *s_decryption_key = decryption_key_start;
 static const uint16_t s_decryption_key_len = decryption_key_end - decryption_key_start;
 #endif // CONFIG_ENABLE_ENCRYPTED_OTA
 
-//dimmable_light::config_t light_config;
-//on_off_light::config_t light_config;
-color_temperature_light::config_t light_config;
-//extended_color_light::config_t light_config;
-
 static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
 {
     switch (event->Type) {
@@ -159,15 +154,15 @@ extern "C" void app_main()
     node::config_t node_config;
     node_t *node = node::create(&node_config, app_attribute_update_cb, app_identification_cb);
 
-    endpoint_t *endpoint = configureLight(light_config, ENDPOINT_FLAG_NONE, light_handle, node);
+    endpoint_t *ret = configureLight(ENDPOINT_FLAG_NONE, light_handle, node);
 
     /* These node and endpoint handles can be used to create/add other endpoints and clusters. */
-    if (!node || !endpoint) {
+    if (!node || ret != ESP_OK) {
         ESP_LOGE(TAG, "Matter node creation failed");
     }
 
-    light_endpoint_id = endpoint::get_id(endpoint);
-    ESP_LOGI(TAG, "Light created with endpoint_id %d", light_endpoint_id);
+    light_endpoint_id = endpoint::get_id(ret);
+    ESP_LOGI(TAG, "Light endpoint id: %u", light_endpoint_id);
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
     /* Set OpenThread platform config */
