@@ -75,6 +75,12 @@ esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_
             } else if (attribute_id == ColorControl::Attributes::ColorTemperatureMireds::Id) {
                 err = app_driver_light_set_temperature(handle, val);
             }
+
+            if (attribute_id == ColorControl::Attributes::CurrentX::Id) {
+                ESP_LOGI(TAG, "ColorControl::Attributes::CurrentX::Id");
+            } else if (attribute_id == ColorControl::Attributes::CurrentY::Id) {
+                ESP_LOGI(TAG, "ColorControl::Attributes::CurrentY::Id");
+            }
         }
     }
     ESP_LOGI(TAG, "Endpoint ID: %d", endpoint_id);
@@ -103,7 +109,7 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
     cluster = cluster::get(endpoint, ColorControl::Id);
     attribute = attribute::get(cluster, ColorControl::Attributes::ColorMode::Id);
     attribute::get_val(attribute, &val);
-    if (val.val.u8 == (uint8_t)ColorControl::ColorMode::kCurrentHueAndCurrentSaturation) {
+    if (val.val.u8 == (uint8_t)ColorControl::ColorMode::EMBER_ZCL_COLOR_MODE_CURRENT_HUE_AND_CURRENT_SATURATION) {
         /* Setting hue */
         attribute = attribute::get(cluster, ColorControl::Attributes::CurrentHue::Id);
         attribute::get_val(attribute, &val);
@@ -112,13 +118,19 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
         attribute = attribute::get(cluster, ColorControl::Attributes::CurrentSaturation::Id);
         attribute::get_val(attribute, &val);
         err |= app_driver_light_set_saturation(handle, &val);
-    } else if (val.val.u8 == (uint8_t)ColorControl::ColorMode::kColorTemperature) {
+    } else if (val.val.u8 == (uint8_t)ColorControl::ColorMode::EMBER_ZCL_COLOR_MODE_COLOR_TEMPERATURE) {
         /* Setting temperature */
         attribute = attribute::get(cluster, ColorControl::Attributes::ColorTemperatureMireds::Id);
         attribute::get_val(attribute, &val);
         err |= app_driver_light_set_temperature(handle, &val);
     } else {
-        ESP_LOGE(TAG, "Color mode not supported");
+        ESP_LOGI(TAG, "Color mode to be implemented");
+        attribute = attribute::get(cluster, ColorControl::Attributes::CurrentX::Id);
+        attribute::get_val(attribute, &val);
+        ESP_LOGI(TAG, "CurrentX: %d", val.val.u16);
+        attribute = attribute::get(cluster, ColorControl::Attributes::CurrentY::Id);
+        attribute::get_val(attribute, &val);
+        ESP_LOGI(TAG, "CurrentY: %d", val.val.u16);
     }
 
     /* Setting power */

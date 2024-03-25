@@ -13,7 +13,6 @@
 #include <esp_matter_console.h>
 #include <esp_matter_ota.h>
 #include "IODriver.hpp"
-#include <app_reset.h>
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #include <platform/ESP32/OpenthreadLauncher.h>
 #endif
@@ -105,10 +104,6 @@ static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
         ESP_LOGI(TAG, "Fabric is committed");
         break;
 
-    case chip::DeviceLayer::DeviceEventType::kBLEDeinitialized:
-        ESP_LOGI(TAG, "BLE deinitialized and memory reclaimed");
-        break;
-
     default:
         break;
     }
@@ -160,9 +155,6 @@ extern "C" void app_main()
     if (!node || ret != ESP_OK) {
         ESP_LOGE(TAG, "Matter node creation failed");
     }
-
-    light_endpoint_id = endpoint::get_id(ret);
-    ESP_LOGI(TAG, "Light endpoint id: %u", light_endpoint_id);
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
     /* Set OpenThread platform config */

@@ -13,35 +13,36 @@ esp_err_t LedDriver::switchState(bool state)
         esp_err_t ret = ledc_set_fade_with_time(LEDC_MODE, LEDC_CHANNEL_0, state ? this->dutyCool : 0, this->fade_time);
         if (ret != ESP_OK)
         {
-#ifdef DEBUG_SENSOR
-            ESP_LOGE(TAG_SENSOR, "failed to set duty for LEDC channel 0 in fade mode");
-#endif
+            #ifdef DEBUG_SENSOR
+                        ESP_LOGE(TAG_SENSOR, "failed to set duty for LEDC channel 0 in fade mode");
+            #endif
             return ret;
         }
-        ret = ledc_fade_start(LEDC_MODE, LEDC_CHANNEL_0, LEDC_FADE_WAIT_DONE);
-        xSemaphoreTake(this->semaphore, portMAX_DELAY);
+
+        ret = ledc_fade_start(LEDC_MODE, LEDC_CHANNEL_0, LEDC_FADE_NO_WAIT);
+        xSemaphoreTake(this->semaphore_cool, portMAX_DELAY);
         if (ret != ESP_OK)
         {
-#ifdef DEBUG_SENSOR
-            ESP_LOGE(TAG_SENSOR, "failed to update duty for LEDC channel 0 in fade mode");
-#endif
+            #ifdef DEBUG_SENSOR
+                        ESP_LOGE(TAG_SENSOR, "failed to update duty for LEDC channel 0 in fade mode");
+            #endif
             return ret;
         }
         ret = ledc_set_fade_with_time(LEDC_MODE, LEDC_CHANNEL_1, state ? this->dutyWarm : 0, this->fade_time);
         if (ret != ESP_OK)
         {
-#ifdef DEBUG_SENSOR
-            ESP_LOGE(TAG_SENSOR, "failed to set duty for LEDC channel 1 in fade mode");
-#endif
+            #ifdef DEBUG_SENSOR
+                        ESP_LOGE(TAG_SENSOR, "failed to set duty for LEDC channel 1 in fade mode");
+            #endif
             return ret;
         }
-        ret = ledc_fade_start(LEDC_MODE, LEDC_CHANNEL_1, LEDC_FADE_WAIT_DONE);
-        xSemaphoreTake(this->semaphore, portMAX_DELAY);
+        ret = ledc_fade_start(LEDC_MODE, LEDC_CHANNEL_1, LEDC_FADE_NO_WAIT);
+        xSemaphoreTake(this->semaphore_warm, portMAX_DELAY);
         if (ret != ESP_OK)
         {
-#ifdef DEBUG_SENSOR
-            ESP_LOGE(TAG_SENSOR, "failed to update duty for LEDC channel 1 in fade mode");
-#endif
+            #ifdef DEBUG_SENSOR
+                        ESP_LOGE(TAG_SENSOR, "failed to update duty for LEDC channel 1 in fade mode");
+            #endif
             return ret;
         }
         return ret;
@@ -51,33 +52,33 @@ esp_err_t LedDriver::switchState(bool state)
         esp_err_t ret = ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_0, state ? this->dutyCool : 0);
         if (ret != ESP_OK)
         {
-#ifdef DEBUG_SENSOR
-            ESP_LOGE(TAG_SENSOR, "failed to set duty for LEDC channel 0 in direct mode");
-#endif
+            #ifdef DEBUG_SENSOR
+                        ESP_LOGE(TAG_SENSOR, "failed to set duty for LEDC channel 0 in direct mode");
+            #endif
             return ret;
         }
         ret = ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_0);
         if (ret != ESP_OK)
         {
-#ifdef DEBUG_SENSOR
-            ESP_LOGE(TAG_SENSOR, "failed to update duty for LEDC channel 0 in direct mode");
-#endif
+            #ifdef DEBUG_SENSOR
+                        ESP_LOGE(TAG_SENSOR, "failed to update duty for LEDC channel 0 in direct mode");
+            #endif
             return ret;
         }
         ret = ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_1, state ? this->dutyWarm : 0);
         if (ret != ESP_OK)
         {
-#ifdef DEBUG_SENSOR
-            ESP_LOGE(TAG_SENSOR, "failed to set duty for LEDC channel 1 in direct mode");
-#endif
+            #ifdef DEBUG_SENSOR
+                        ESP_LOGE(TAG_SENSOR, "failed to set duty for LEDC channel 1 in direct mode");
+            #endif
             return ret;
         }
         ret = ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_1);
         if (ret != ESP_OK)
         {
-#ifdef DEBUG_SENSOR
-            ESP_LOGE(TAG_SENSOR, "failed to update duty for LEDC channel 1 in direct mode");
-#endif
+            #ifdef DEBUG_SENSOR
+                        ESP_LOGE(TAG_SENSOR, "failed to update duty for LEDC channel 1 in direct mode");
+            #endif
             return ret;
         }
         return ret;

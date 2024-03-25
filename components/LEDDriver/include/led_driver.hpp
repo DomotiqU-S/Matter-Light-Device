@@ -38,13 +38,28 @@ private:
     uint32_t dutyCool = 0;
     uint16_t temperature = MID_TEMPERATURE;
     uint8_t intensity = 0;
-    SemaphoreHandle_t semaphore = NULL;
+    SemaphoreHandle_t semaphore_cool = NULL;
+    SemaphoreHandle_t semaphore_warm = NULL;
+
     /*
      * This callback function will be called when fade operation has ended
      * Use callback only if you are aware it is being called inside an ISR
      * Otherwise, you can use a semaphore to unblock tasks
      */
-    static IRAM_ATTR bool cb_ledc_fade_end_event(const ledc_cb_param_t *param, void *user_arg)
+    static IRAM_ATTR bool cb_ledc_fade_end_event_cool(const ledc_cb_param_t *param, void *user_arg)
+    {
+        BaseType_t taskAwoken = pdFALSE;
+
+        if (param->event == LEDC_FADE_END_EVT)
+        {
+            SemaphoreHandle_t counting_sem = (SemaphoreHandle_t)user_arg;
+            xSemaphoreGiveFromISR(counting_sem, &taskAwoken);
+        }
+
+        return (taskAwoken == pdTRUE);
+    }
+
+    static IRAM_ATTR bool cb_ledc_fade_end_event_warm(const ledc_cb_param_t *param, void *user_arg)
     {
         BaseType_t taskAwoken = pdFALSE;
 
@@ -104,11 +119,15 @@ public:
         if (fade == true)
         {
             ledc_fade_func_install(0);
+            ledc_cbs_t callbacks_cool = {
+                .fade_cb = this->cb_ledc_fade_end_event_cool
+            };
             ledc_cbs_t callbacks = {
-                .fade_cb = this->cb_ledc_fade_end_event};
+                .fade_cb = this->cb_ledc_fade_end_event_warm
+            };
             this->semaphore = xSemaphoreCreateCounting(2, 0);
-            ledc_cb_register(LEDC_MODE, LEDC_CHANNEL_0, &callbacks, (void *) this->semaphore);
-            ledc_cb_register(LEDC_MODE, LEDC_CHANNEL_1, &callbacks, (void *) this->semaphore);
+            ledc_cb_register(LEDC_MODE, LEDC_CHANNEL_0, &callbacks_cool, (void *) this->semaphore_cool);
+            ledc_cb_register(LEDC_MODE, LEDC_CHANNEL_1, &callbacks_warm, (void *) this->semaphore_warm);
         }
     }
     ~LedDriver();
