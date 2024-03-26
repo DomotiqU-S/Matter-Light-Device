@@ -30,7 +30,7 @@ Automation::~Automation()
 {
     for (auto &trigger : this->triggers)
     {
-        delete trigger;
+        trigger->Stop();
     }
     for (auto &condition : this->conditions)
     {

@@ -163,7 +163,6 @@ extern "C" void app_main()
 
     distributed_device::config_t distributed_config;
     distributed_config.distributed_device = cluster::distributed_device::config_t();
-
     endpoint_t *endpoint = distributed_device::create(node, &distributed_config, ENDPOINT_FLAG_NONE, nullptr);
 
     /* These node and endpoint handles can be used to create/add other endpoints and clusters. */

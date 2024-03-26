@@ -14,3 +14,5 @@ sdkconfig
 sdkconfig.old
 .vscode/
 .history/
+.idea/
+cmake-build-debug/

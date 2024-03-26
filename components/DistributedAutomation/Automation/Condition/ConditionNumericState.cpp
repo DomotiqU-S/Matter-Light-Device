@@ -14,18 +14,18 @@ ConditionNumericState::ConditionNumericState(string alias, string attribute, tim
 bool ConditionNumericState::Verify(string trigger_alias)
 {
     State state_ = DistributedDevice::Instance().GetAttribute(this->attribute);
-    try
+    // try
+    // {
+    float value = stof(state_.value);
+    if (value > this->above && value < this->below)
     {
-        float value = stof(state_.value);
-        if (value > this->above && value < this->below)
-        {
-            return this->Verify_(state_);
-        }
+        return this->Verify_(state_);
     }
-    catch (std::invalid_argument &e)
-    {
-        return false;
-    }
+    // }
+    // catch (std::invalid_argument &e)
+    // {
+    //     return false;
+    // }
     return false;
 }
 

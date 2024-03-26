@@ -2,7 +2,6 @@
 // Created by talgarr on 01/02/24.
 //
 
-#include <thread>
 #include "DistributedDevice.hpp"
 
 DistributedDevice::DistributedDevice()
@@ -37,14 +36,10 @@ bool DistributedDevice::AddAutomation(Automation *automation)
 
 void DistributedDevice::RemoveAutomation(string alias)
 {
-    for (auto &automat : this->automations)
-    {
-        if (automat->GetAlias() == alias)
-        {
-            this->automations.erase(std::remove(this->automations.begin(), this->automations.end(), automat), this->automations.end());
-            return;
-        }
-    }
+    this->automations.erase(std::remove_if(this->automations.begin(), this->automations.end(), [alias](Automation *o)
+                                           { return o->GetAlias().compare(alias) == 0; }),
+                            this->automations.end());
+    return;
 }
 
 void DistributedDevice::Run()
@@ -92,19 +87,17 @@ void DistributedDevice::Stop()
         t->Stop();
     }
     this->cv.notify_all();
-    this->automations.clear();
 }
 
 void DistributedDevice::TriggerIO(const string &attribute, const string &value)
 {
-    if (this->states[attribute].value == value)
+    if (this->states[attribute].value.compare(value) != 0)
     {
-        return;
-    }
-    this->states[attribute] = State(time(nullptr), value);
-    for (auto &automation : this->automations)
-    {
-        automation->IO(attribute, value);
+        this->states[attribute] = State({time(nullptr), string(value)});
+        for (auto &automation : this->automations)
+        {
+            automation->IO(attribute, value);
+        }
     }
 }
 

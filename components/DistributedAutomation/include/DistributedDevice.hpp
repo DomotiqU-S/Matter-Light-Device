@@ -8,6 +8,8 @@
 #include <map>
 #include <thread>
 #include <condition_variable>
+#include <algorithm>
+#include <cstring>
 
 #include "Automation.hpp"
 #include "State.hpp"

@@ -9,6 +9,7 @@
 #include <mutex>
 #include <utility>
 #include <condition_variable>
+#include <thread>
 
 #include "Trigger.hpp"
 #include "Condition.hpp"

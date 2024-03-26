@@ -6,6 +6,7 @@
 #define CPP_TRIGGERSTATE_HPP
 
 #include <vector>
+#include <thread>
 #include "Trigger.hpp"
 #include "TriggerTime.hpp"
 #include "croncpp.h"

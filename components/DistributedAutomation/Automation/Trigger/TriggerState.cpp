@@ -24,7 +24,7 @@ TriggerState::~TriggerState()
     {
         this->trigger_time->Stop();
     }
-    delete this->trigger_time;
+    // delete this->trigger_time;
 }
 
 void TriggerState::Run(condition_variable *cv_mother, mutex *cv_m_mother)
