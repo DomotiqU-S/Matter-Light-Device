@@ -1,11 +1,3 @@
-/*
-   This example code is in the Public Domain (or CC0 licensed, at your option.)
-
-   Unless required by applicable law or agreed to in writing, this
-   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
-   CONDITIONS OF ANY KIND, either express or implied.
-*/
-
 #include <esp_log.h>
 #include <stdlib.h>
 #include <string.h>
@@ -25,7 +17,7 @@ extern uint16_t light_endpoint_id;
 app_driver_handle_t app_driver_distributed_device_init()
 {
     /* Initialize distributed device */
-    led_driver_config_t config = led_driver_get_config();
-    led_driver_handle_t handle = led_driver_init(&config);
+    led_driver_config_t config = distributed_device_get_config();
+    led_driver_handle_t handle = distributed_device_init(&config);
     return (app_driver_handle_t)handle;
 }

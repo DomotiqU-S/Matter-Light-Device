@@ -36,6 +36,16 @@ bool DistributedDevice::AddAutomation(Automation *automation)
 
 void DistributedDevice::RemoveAutomation(string alias)
 {
+    // for (auto &automation : this->automations)
+    // {
+    //     if (automation->GetAlias().compare(alias) == 0)
+    //     {
+    //         automation->Stop();
+    //         this->automations.erase(std::remove(this->automations.begin(), this->automations.end(), this->automation.end()));
+    //     }
+    // }
+
+
     this->automations.erase(std::remove_if(this->automations.begin(), this->automations.end(), [alias](Automation *o)
                                            { return o->GetAlias().compare(alias) == 0; }),
                             this->automations.end());
