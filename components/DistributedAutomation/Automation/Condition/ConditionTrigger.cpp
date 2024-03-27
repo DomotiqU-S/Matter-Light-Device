@@ -15,3 +15,10 @@ bool ConditionTrigger::Verify(string alias)
 }
 
 ConditionTrigger::~ConditionTrigger() = default;
+
+static ConditionTrigger *ConditionTrigger::Json2Condition(nlohmann::json json)
+{
+    string alias = json["alias"];
+    string trigger_alias = json["trigger_alias"];
+    return new ConditionTrigger(alias, trigger_alias);
+}

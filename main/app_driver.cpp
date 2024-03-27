@@ -14,10 +14,10 @@ static const char *TAG = "app_driver";
 extern uint16_t light_endpoint_id;
 
 /* Do any conversions/remapping for the actual value here */
-app_driver_handle_t app_driver_distributed_device_init()
-{
-    /* Initialize distributed device */
-    led_driver_config_t config = distributed_device_get_config();
-    led_driver_handle_t handle = distributed_device_init(&config);
-    return (app_driver_handle_t)handle;
-}
+// app_driver_handle_t app_driver_distributed_device_init()
+// {
+//     /* Initialize distributed device */
+//     led_driver_config_t config = distributed_device_get_config();
+//     led_driver_handle_t handle = distributed_device_init(&config);
+//     return (app_driver_handle_t)handle;
+// }

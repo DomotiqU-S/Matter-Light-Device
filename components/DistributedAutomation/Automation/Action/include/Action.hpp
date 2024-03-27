@@ -8,16 +8,20 @@
 #include <iostream>
 #include <string>
 #include <utility>
+#include "json.hpp"
+
 using namespace std;
 
-class Action {
+class Action
+{
 public:
     explicit Action(std::string alias);
     virtual ~Action();
     virtual void Do() = 0;
 
     std::string alias;
+
+    static Action *Json2Action(nlohmann::json json);
 };
 
-
-#endif //DISTRIBUTED_SERVER_ACTION_HPP
+#endif // DISTRIBUTED_SERVER_ACTION_HPP

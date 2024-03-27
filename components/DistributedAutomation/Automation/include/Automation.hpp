@@ -10,6 +10,7 @@
 #include <utility>
 #include <condition_variable>
 #include <thread>
+#include "json.hpp"
 
 #include "Trigger.hpp"
 #include "Condition.hpp"
@@ -56,6 +57,9 @@ public:
     bool Verify();
     void Do();
     void IO(string attribute, string value);
+
+    // JSON
+    static Automation *Json2Automation(nlohmann::json json);
 };
 
 #endif // CPP_AUTOMATION_HPP

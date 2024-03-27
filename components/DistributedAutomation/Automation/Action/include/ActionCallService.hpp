@@ -7,6 +7,7 @@
 
 #include "Action.hpp"
 #include "DistributedDevice.hpp"
+#include "json.hpp"
 
 class ActionCallService : public Action
 {
@@ -18,6 +19,8 @@ public:
     ActionCallService(string alias, string service, string service_data);
     ~ActionCallService() override;
     void Do() override;
+
+    static ActionCallService *Json2Action(nlohmann::json json);
 };
 
 #endif // DISTRIBUTED_SERVER_ACTIONCALLSERVICE_HPP

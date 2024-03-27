@@ -30,3 +30,13 @@ bool ConditionNumericState::Verify(string trigger_alias)
 }
 
 ConditionNumericState::~ConditionNumericState() = default;
+
+static ConditionNumericState *ConditionNumericState::Json2Condition(nlohmann::json json)
+{
+    string alias = json["alias"];
+    string attribute = json["attribute"];
+    time_t for_ = json["for"];
+    double above = json["above"];
+    double below = json["below"];
+    return new ConditionNumericState(alias, attribute, for_, above, below);
+}

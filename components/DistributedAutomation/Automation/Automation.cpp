@@ -105,6 +105,7 @@ void Automation::Do()
 void Automation::Run(condition_variable *cv, mutex *cv_m)
 {
     this->SetTrigger();
+    this->running = true;
     while (this->running)
     {
         {
@@ -167,4 +168,28 @@ void Automation::IO(string attribute, string value)
     {
         trigger->IO(attribute, value);
     }
+}
+
+static Automation *Automation::Json2Automation(nlohmann::json json)
+{
+    string alias = json["alias"];
+    string description = json["description"];
+    vector<Trigger *> triggers;
+    vector<Condition *> conditions;
+    vector<Action *> actions;
+
+    for (auto &trigger : json["triggers"])
+    {
+        triggers.push_back(Trigger::Json2Trigger(trigger));
+    }
+    for (auto &condition : json["conditions"])
+    {
+        conditions.push_back(Condition::Json2Condition(condition));
+    }
+    for (auto &action : json["actions"])
+    {
+        actions.push_back(Action::Json2Action(action));
+    }
+
+    return new Automation(alias, description, triggers, conditions, actions);
 }

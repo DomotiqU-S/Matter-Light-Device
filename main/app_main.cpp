@@ -155,7 +155,7 @@ extern "C" void app_main()
     nvs_flash_init();
 
     /* Initialize driver */
-    app_driver_handle_t distributed_device_handle = app_driver_distributed_device_init();
+    // app_driver_handle_t distributed_device_handle = app_driver_distributed_device_init();
 
     /* Create a Matter node and add the mandatory Root Node device type on endpoint 0 */
     node::config_t node_config;

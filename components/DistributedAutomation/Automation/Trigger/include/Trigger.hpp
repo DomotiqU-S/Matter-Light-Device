@@ -8,16 +8,18 @@
 #include <string>
 #include <utility>
 #include <condition_variable>
+#include "json.hpp"
 
 using namespace std;
 
-class Trigger {
+class Trigger
+{
 protected:
     string alias;
 
     bool has_triggered;
-    condition_variable * cv_mother;
-    mutex * cv_m_mother;
+    condition_variable *cv_mother;
+    mutex *cv_m_mother;
 
 public:
     explicit Trigger(string alias);
@@ -28,6 +30,8 @@ public:
     string GetAlias();
 
     virtual void IO(string attribute, string value);
+
+    static Trigger *Json2Trigger(nlohmann::json json);
 };
 
-#endif //CPP_TRIGGER_HPP
+#endif // CPP_TRIGGER_HPP

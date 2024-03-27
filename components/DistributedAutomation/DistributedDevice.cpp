@@ -45,7 +45,6 @@ void DistributedDevice::RemoveAutomation(string alias)
     //     }
     // }
 
-
     this->automations.erase(std::remove_if(this->automations.begin(), this->automations.end(), [alias](Automation *o)
                                            { return o->GetAlias().compare(alias) == 0; }),
                             this->automations.end());
@@ -128,3 +127,19 @@ State DistributedDevice::GetAttribute(const string &attribute)
 //     }
 //     return instance;
 // }
+
+void DistributedDevice::SetAutomationsFromJsonString(string json_string)
+{
+    for (auto &automation : this->automations)
+    {
+        automation->Stop();
+    }
+
+    automations.clear();
+    nlohmann::json j = nlohmann::json::parse(json_string);
+
+    for (auto &automation : j)
+    {
+        this->AddAutomation(Json2Automation(automation));
+    }
+}

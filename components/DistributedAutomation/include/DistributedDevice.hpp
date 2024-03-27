@@ -10,6 +10,7 @@
 #include <condition_variable>
 #include <algorithm>
 #include <cstring>
+#include "json.hpp"
 
 #include "Automation.hpp"
 #include "State.hpp"
@@ -39,6 +40,7 @@ public:
     // Setter
     bool AddAutomation(Automation *automation);
     void RemoveAutomation(string alias);
+    void SetAutomationsFromJsonString(string json_string);
 
     // Getter
     vector<Automation *> GetAutomations();

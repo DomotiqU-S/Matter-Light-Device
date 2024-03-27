@@ -7,9 +7,10 @@
 
 #include "Action.hpp"
 #include <thread>
+#include "json.hpp"
 
-
-class ActionDelay : public Action {
+class ActionDelay : public Action
+{
 private:
     time_t delay_s;
 
@@ -18,6 +19,7 @@ public:
     ~ActionDelay() override;
     void Do() override;
 
+    static ActionDelay *Json2Action(nlohmann::json json);
 };
 
-#endif //CPP_ACTIONDELAY_HPP
+#endif // CPP_ACTIONDELAY_HPP

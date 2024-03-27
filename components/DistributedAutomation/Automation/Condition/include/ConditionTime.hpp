@@ -9,6 +9,7 @@
 #include "Condition.hpp"
 #include <algorithm>
 #include <vector>
+#include "json.hpp"
 
 using namespace std;
 
@@ -23,6 +24,8 @@ public:
     explicit ConditionTime(string alias, tm after, tm before, vector<string> weekday);
     ~ConditionTime() override;
     bool Verify(string trigger_alias) override;
+
+    static ConditionTime *Json2Condition(nlohmann::json json);
 };
 
 #endif // CPP_CONDITIONTIME_HPP

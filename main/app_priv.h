@@ -35,14 +35,14 @@
 
 typedef void *app_driver_handle_t;
 
-/** Initialize the distributed device driver
- *
- * This initializes the light driver associated with the selected board.
- *
- * @return Handle on success.
- * @return NULL in case of failure.
- */
-app_driver_handle_t app_driver_distributed_device_init();
+// /** Initialize the distributed device driver
+//  *
+//  * This initializes the light driver associated with the selected board.
+//  *
+//  * @return Handle on success.
+//  * @return NULL in case of failure.
+//  */
+// app_driver_handle_t app_driver_distributed_device_init();
 
 /** Driver Update
  *
