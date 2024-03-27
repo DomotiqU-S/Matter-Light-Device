@@ -30,8 +30,6 @@ public:
     string GetAlias();
 
     virtual void IO(string attribute, string value);
-
-    static Trigger *Json2Trigger(nlohmann::json json);
 };
 
 #endif // CPP_TRIGGER_HPP

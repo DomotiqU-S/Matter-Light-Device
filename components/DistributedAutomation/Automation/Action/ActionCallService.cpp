@@ -18,11 +18,3 @@ void ActionCallService::Do()
     // TODO: Replace next line with endpointcall
     DistributedDevice::Instance().TriggerIO(this->service, this->service_data);
 }
-
-static ActionCallService *ActionCallService::Json2Action(nlohmann::json json)
-{
-    string alias = json["alias"];
-    string service = json["service"];
-    string service_data = json["service_data"];
-    return new ActionCallService(alias, service, service_data);
-}

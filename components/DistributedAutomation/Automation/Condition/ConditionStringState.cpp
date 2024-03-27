@@ -20,12 +20,3 @@ bool ConditionStringState::Verify(string trigger_alias)
 }
 
 ConditionStringState::~ConditionStringState() = default;
-
-static ConditionStringState *ConditionStringState::Json2Condition(nlohmann::json json)
-{
-    string alias = json["alias"];
-    string attribute = json["attribute"];
-    time_t for_ = json["for"];
-    string value = json["value"];
-    return new ConditionStringState(alias, attribute, for_, value);
-}

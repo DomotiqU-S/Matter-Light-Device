@@ -19,8 +19,6 @@ public:
     ActionCallService(string alias, string service, string service_data);
     ~ActionCallService() override;
     void Do() override;
-
-    static ActionCallService *Json2Action(nlohmann::json json);
 };
 
 #endif // DISTRIBUTED_SERVER_ACTIONCALLSERVICE_HPP

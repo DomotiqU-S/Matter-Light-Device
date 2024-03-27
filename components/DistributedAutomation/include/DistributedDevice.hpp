@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cstring>
 #include "json.hpp"
+#include "JsonUtils.hpp"
 
 #include "Automation.hpp"
 #include "State.hpp"

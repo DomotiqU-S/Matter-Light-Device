@@ -18,8 +18,6 @@ public:
     ActionDelay(string alias, time_t delay_s);
     ~ActionDelay() override;
     void Do() override;
-
-    static ActionDelay *Json2Action(nlohmann::json json);
 };
 
 #endif // CPP_ACTIONDELAY_HPP

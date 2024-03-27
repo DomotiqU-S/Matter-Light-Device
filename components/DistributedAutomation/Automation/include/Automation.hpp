@@ -57,9 +57,6 @@ public:
     bool Verify();
     void Do();
     void IO(string attribute, string value);
-
-    // JSON
-    static Automation *Json2Automation(nlohmann::json json);
 };
 
 #endif // CPP_AUTOMATION_HPP

@@ -53,7 +53,7 @@ namespace esp_matter
             {
                 ESP_LOGI(TAG_CUSTOM_CLUSTER, "set_automations_callback");
 
-                DistributedDevice::Instance().SetAutomationsFromJsonString(data->val);
+                DistributedDevice::Instance()->SetAutomationsFromJsonString(data->val);
                 return ESP_OK;
             }
 

@@ -53,15 +53,3 @@ ConditionLogical::~ConditionLogical()
     }
     this->conditions.clear();
 };
-
-static ConditionLogical *ConditionLogical::Json2Condition(nlohmann::json json)
-{
-    string alias = json["alias"];
-    LogicalOperator logicalOperator = json["logicalOperator"];
-    vector<Condition *> conditions;
-    for (auto &condition : json["conditions"])
-    {
-        conditions.push_back(Condition::Json2Condition(condition.dump()));
-    }
-    return new ConditionLogical(alias, logicalOperator, conditions);
-}

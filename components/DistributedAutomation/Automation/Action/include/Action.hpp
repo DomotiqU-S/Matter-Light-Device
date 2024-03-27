@@ -20,8 +20,6 @@ public:
     virtual void Do() = 0;
 
     std::string alias;
-
-    static Action *Json2Action(nlohmann::json json);
 };
 
 #endif // DISTRIBUTED_SERVER_ACTION_HPP

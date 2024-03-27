@@ -21,8 +21,6 @@ public:
     explicit ConditionTrigger(string alias, string trigger_alias);
     ~ConditionTrigger() override;
     bool Verify(string trigger_alias) override;
-
-    static ConditionTrigger *Json2Condition(nlohmann::json json);
 };
 
 #endif // CPP_CONDITIONTRIGGER_HPP

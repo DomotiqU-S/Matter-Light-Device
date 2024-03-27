@@ -140,6 +140,6 @@ void DistributedDevice::SetAutomationsFromJsonString(string json_string)
 
     for (auto &automation : j)
     {
-        this->AddAutomation(Json2Automation(automation));
+        this->AddAutomation(JsonUtils::Json2Automation(automation));
     }
 }

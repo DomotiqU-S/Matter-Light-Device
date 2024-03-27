@@ -20,7 +20,6 @@ public:
                        std::string from_state, std::string to_state);
     void IO(string attribute, string value) override;
     ~TriggerStringState() = default;
-    static TriggerStringState *Json2Trigger(nlohmann::json json);
 };
 
 #endif // DISTRIBUTED_AUTOMATIONS_TRIGGERSTRINGSTATE_HPP

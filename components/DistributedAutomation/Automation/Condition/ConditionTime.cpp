@@ -39,12 +39,3 @@ bool ConditionTime::Verify(string trigger_alias)
 }
 
 ConditionTime::~ConditionTime() = default;
-
-static ConditionTime *ConditionTime::Json2Condition(nlohmann::json json)
-{
-    string alias = json["alias"];
-    tm after = json["after"];
-    tm before = json["before"];
-    vector<string> weekday = json["weekday"];
-    return new ConditionTime(alias, after, before, weekday);
-}

@@ -57,11 +57,3 @@ bool TriggerTime::IsRunning() const
 }
 
 TriggerTime::~TriggerTime() = default;
-
-static TriggerTime *TriggerTime::Json2Trigger(nlohmann::json json)
-{
-    string alias = json["alias"];
-    string pattern = json["pattern"];
-    bool one_time = json["one_time"];
-    return new TriggerTime(alias, pattern, one_time);
-}

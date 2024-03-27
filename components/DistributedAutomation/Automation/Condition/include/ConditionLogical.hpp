@@ -27,8 +27,6 @@ public:
     explicit ConditionLogical(string alias, LogicalOperator logicalOperator, vector<Condition *> conditions);
     ~ConditionLogical() override;
     bool Verify(string trigger_alias) override;
-
-    static ConditionLogical *Json2Condition(nlohmann::json json);
 };
 
 #endif // CPP_CONDITIONLOGICAL_HPP

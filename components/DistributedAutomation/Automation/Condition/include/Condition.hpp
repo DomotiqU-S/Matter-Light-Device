@@ -19,8 +19,6 @@ public:
     explicit Condition(string alias);
     virtual ~Condition();
     virtual bool Verify(string trigger_alias);
-
-    static Condition *Json2Condition(nlohmann::json json);
 };
 
 #endif // CPP_CONDITION_HPP

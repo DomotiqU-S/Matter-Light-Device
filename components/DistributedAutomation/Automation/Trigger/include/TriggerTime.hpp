@@ -30,8 +30,6 @@ public:
     void SetPattern(const string &pattern_);
     bool IsRunning() const;
     ~TriggerTime();
-
-    static TriggerTime *Json2Trigger(nlohmann::json json);
 };
 
 #endif // CPP_TRIGGERTIMEPATTERN_HPP
