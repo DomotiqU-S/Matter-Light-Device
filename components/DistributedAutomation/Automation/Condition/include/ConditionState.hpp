@@ -6,9 +6,9 @@
 #define CPP_CONDITIONSTATE_HPP
 
 #include "Condition.hpp"
-#include "DistributedDevice.hpp"
 #include <utility>
 #include <string>
+#include "State.hpp"
 
 class ConditionState : public Condition
 {

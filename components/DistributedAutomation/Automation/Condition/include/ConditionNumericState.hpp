@@ -6,6 +6,8 @@
 #define CPP_CONDITIONNUMERICSTATE_HPP
 
 #include "ConditionState.hpp"
+#include "StateCollection.hpp"
+#include "State.hpp"
 
 class ConditionNumericState : public ConditionState
 {

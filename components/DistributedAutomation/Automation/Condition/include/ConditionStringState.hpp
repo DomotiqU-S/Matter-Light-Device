@@ -8,6 +8,8 @@
 #include "ConditionState.hpp"
 #include <string>
 #include "json.hpp"
+#include "StateCollection.hpp"
+#include "State.hpp"
 
 using namespace std;
 

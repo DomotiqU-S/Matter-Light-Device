@@ -6,7 +6,7 @@
 #define DISTRIBUTED_SERVER_ACTIONCALLSERVICE_HPP
 
 #include "Action.hpp"
-#include "DistributedDevice.hpp"
+// #include "DistributedDevice.hpp"
 #include "json.hpp"
 
 class ActionCallService : public Action

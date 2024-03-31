@@ -16,5 +16,5 @@ ActionCallService::~ActionCallService() = default;
 void ActionCallService::Do()
 {
     // TODO: Replace next line with endpointcall
-    DistributedDevice::Instance().TriggerIO(this->service, this->service_data);
+    // DistributedDevice::Instance().TriggerIO(this->service, this->service_data);
 }

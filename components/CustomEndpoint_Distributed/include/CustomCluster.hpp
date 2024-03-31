@@ -9,7 +9,7 @@
 using namespace chip::app::Clusters;
 // using namespace esp_matter::cluster;
 
-#include "DistributedDevice.hpp"
+// #include "DistributedDevice.hpp"
 
 #define TAG_CUSTOM_CLUSTER "CustomCluster"
 namespace chip

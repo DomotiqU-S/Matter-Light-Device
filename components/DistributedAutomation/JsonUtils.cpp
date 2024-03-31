@@ -57,7 +57,6 @@ Condition *JsonUtils::Json2Condition(nlohmann::json json)
 ConditionLogical *JsonUtils::Json2ConditionLogical(nlohmann::json json)
 {
     string alias = json["alias"];
-    string type = json["type"];
     string operation = json["operation"];
     vector<Condition *> conditions;
 
@@ -66,43 +65,46 @@ ConditionLogical *JsonUtils::Json2ConditionLogical(nlohmann::json json)
         conditions.push_back(Json2Condition(condition));
     }
 
-    return new ConditionLogical(alias, type, operation, conditions);
+    return new ConditionLogical(alias, GetLogicalOperator(operation), conditions);
 }
 
 ConditionStringState *JsonUtils::Json2ConditionStringState(nlohmann::json json)
 {
     string alias = json["alias"];
-    string entity_id = json["entity_id"];
-    string state = json["state"];
+    string attribute = json["attribute"];
+    time_t for_ = json["for_"];
+    string value = json["value"];
 
-    return new ConditionStringState(alias, entity_id, state);
+    return new ConditionStringState(alias, attribute, for_, value);
 }
 
 ConditionNumericState *JsonUtils::Json2ConditionNumericState(nlohmann::json json)
 {
     string alias = json["alias"];
-    string entity_id = json["entity_id"];
-    double state = json["state"];
+    string attribute = json["attribute"];
+    time_t for_ = json["for_"];
+    double above = json["above"];
+    double below = json["below"];
 
-    return new ConditionNumericState(alias, entity_id, state);
+    return new ConditionNumericState(alias, attribute, for_, above, below);
 }
 
 ConditionTime *JsonUtils::Json2ConditionTime(nlohmann::json json)
 {
     string alias = json["alias"];
-    string entity_id = json["entity_id"];
-    string state = json["state"];
+    time_t after = json["after"];
+    time_t before = json["before"];
+    vector<string> weekday = json.at("weekday").get<vector<string>>();
 
-    return new ConditionTime(alias, entity_id, state);
+    return new ConditionTime(alias, *localtime(&after), *localtime(&before), weekday);
 }
 
 ConditionTrigger *JsonUtils::Json2ConditionTrigger(nlohmann::json json)
 {
-    string alias = json["alias"];
-    string entity_id = json["entity_id"];
-    string state = json["state"];
+    string alias = json.at("alias").get<string>();
+    string trigger_alias = json.at("trigger_alias").get<string>();
 
-    return new ConditionTrigger(alias, entity_id, state);
+    return new ConditionTrigger(alias, trigger_alias);
 }
 
 Trigger *JsonUtils::Json2Trigger(nlohmann::json json)
@@ -152,11 +154,10 @@ TriggerStringState *JsonUtils::Json2TriggerStringState(nlohmann::json json)
 TriggerTime *JsonUtils::Json2TriggerTime(nlohmann::json json)
 {
     string alias = json["alias"];
-    string attribute = json["attribute"];
-    time_t for_s = json["for_s"];
-    string time = json["time"];
+    string pattern = json["pattern"];
+    bool one_time = json["one_time"];
 
-    return new TriggerTime(alias, attribute, for_s, time);
+    return new TriggerTime(alias, pattern, one_time);
 }
 
 Action *JsonUtils::Json2Action(nlohmann::json json)
@@ -181,10 +182,9 @@ ActionCallService *JsonUtils::Json2ActionCallService(nlohmann::json json)
 {
     string alias = json["alias"];
     string service = json["service"];
-    string entity_id = json["entity_id"];
-    string data = json["data"];
+    string service_data = json["service_data"];
 
-    return new ActionCallService(alias, service, entity_id, data);
+    return new ActionCallService(alias, service, service_data);
 }
 
 ActionDelay *JsonUtils::Json2ActionDelay(nlohmann::json json)

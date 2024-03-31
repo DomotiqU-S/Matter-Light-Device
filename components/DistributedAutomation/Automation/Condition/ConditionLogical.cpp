@@ -35,7 +35,10 @@ bool ConditionLogical::Verify(string trigger_alias)
             }
         }
         return false;
+    case INVALID:
+        return false;
     }
+
     return false;
 }
 

@@ -9,13 +9,7 @@
 #include "Condition.hpp"
 #include <utility>
 #include "json.hpp"
-
-enum LogicalOperator
-{
-    AND,
-    OR,
-    NOT
-};
+#include "LogicalOperator.hpp"
 
 class ConditionLogical : public Condition
 {

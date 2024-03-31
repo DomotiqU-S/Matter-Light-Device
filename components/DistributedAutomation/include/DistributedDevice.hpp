@@ -11,17 +11,17 @@
 #include <algorithm>
 #include <cstring>
 #include "json.hpp"
-#include "JsonUtils.hpp"
+// #include "JsonUtils.hpp"
 
 #include "Automation.hpp"
 #include "State.hpp"
+#include "StateCollection.hpp"
 #include "DistributedMatterAPI.hpp"
 
 class DistributedDevice
 {
 private:
     vector<Automation *> automations;
-    map<string, State> states;
     bool running;
     mutex cv_m;
     condition_variable cv;
@@ -45,7 +45,6 @@ public:
 
     // Getter
     vector<Automation *> GetAutomations();
-    State GetAttribute(const string &attribute);
 
     void UpdateAutomations();
 

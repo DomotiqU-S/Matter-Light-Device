@@ -100,9 +100,9 @@ void DistributedDevice::Stop()
 
 void DistributedDevice::TriggerIO(const string &attribute, const string &value)
 {
-    if (this->states[attribute].value.compare(value) != 0)
+    if (StateCollection::Instance().GetAttribute(attribute).value.compare(value) != 0)
     {
-        this->states[attribute] = State({time(nullptr), string(value)});
+        StateCollection::Instance().SetAttribute(attribute, State({time(nullptr), string(value)}));
         for (auto &automation : this->automations)
         {
             automation->IO(attribute, value);
@@ -110,36 +110,18 @@ void DistributedDevice::TriggerIO(const string &attribute, const string &value)
     }
 }
 
-State DistributedDevice::GetAttribute(const string &attribute)
-{
-    if (this->states.find(attribute) == this->states.end())
-    {
-        return {};
-    }
-    return this->states[attribute];
-}
-
-// DistributedDevice *DistributedDevice::GetInstance() {
-//     lock_guard<mutex> lock(mutex_singleton);
-//     if (instance == nullptr)
+// void DistributedDevice::SetAutomationsFromJsonString(string json_string)
+// {
+//     for (auto &automation : this->automations)
 //     {
-//         instance = new DistributedDevice();
+//         automation->Stop();
 //     }
-//     return instance;
+
+//     automations.clear();
+//     nlohmann::json j = nlohmann::json::parse(json_string);
+
+//     for (auto &automation : j)
+//     {
+//         this->AddAutomation(JsonUtils::Json2Automation(automation));
+//     }
 // }
-
-void DistributedDevice::SetAutomationsFromJsonString(string json_string)
-{
-    for (auto &automation : this->automations)
-    {
-        automation->Stop();
-    }
-
-    automations.clear();
-    nlohmann::json j = nlohmann::json::parse(json_string);
-
-    for (auto &automation : j)
-    {
-        this->AddAutomation(JsonUtils::Json2Automation(automation));
-    }
-}
