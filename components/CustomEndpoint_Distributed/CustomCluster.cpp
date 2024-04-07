@@ -49,11 +49,24 @@ namespace esp_matter
             //     return ESP_OK;
             // }
 
-            esp_err_t set_automations_callback(esp_matter_attr_val_t *data)
+            esp_err_t set_automation_callback(esp_matter_attr_val_t *data)
             {
                 ESP_LOGI(TAG_CUSTOM_CLUSTER, "set_automations_callback");
+                ESP_LOGE(TAG_CUSTOM_CLUSTER, "data->val.a.s: %d", data->val.a.s);
+                ESP_LOGE(TAG_CUSTOM_CLUSTER, "data->val.a.n: %d", data->val.a.n);
+                ESP_LOGE(TAG_CUSTOM_CLUSTER, "data->val.a.t: %d", data->val.a.t);
+                ESP_LOGE(TAG_CUSTOM_CLUSTER, "data->val.a.b: %s", data->val.a.b);
 
-                // DistributedDevice::Instance()->SetAutomationsFromJsonString(data->val);
+                char *result = (char *)malloc(data->val.a.t);
+                if (result)
+                {
+                    memcpy(result, data->val.a.b, data->val.a.t);
+                }
+                nlohmann::json json = nlohmann::json::parse(std::string(result));
+                // free(result);
+                ESP_LOGI(TAG_CUSTOM_CLUSTER, "set_automations_callback: %s", json.dump().c_str());
+
+                DistributedAutomation::Device::Instance().SetAutomationsFromJson(JsonUtils::MinimizedJson2Json(json));
                 return ESP_OK;
             }
 
@@ -66,13 +79,13 @@ namespace esp_matter
                     return NULL;
                 }
 
-                ESP_LOGI(TAG_CUSTOM_CLUSTER, "Custom distributed Cluster...");
-                attribute::create(cluster, chip::app::Clusters::DistributedDevice::attribute::automations::Id, ATTRIBUTE_FLAG_WRITABLE, esp_matter_char_str(config_->automations, sizeof(config_->automations)));
+                attribute::create(cluster, chip::app::Clusters::DistributedDevice::attribute::automation_1::Id, ATTRIBUTE_FLAG_WRITABLE, esp_matter_char_str(config_->automation_1, sizeof(config_->automation_1)));
+                // attribute::create(cluster, chip::app::Clusters::DistributedDevice::attribute::automation_2::Id, ATTRIBUTE_FLAG_WRITABLE, esp_matter_char_str(config_->automation_2, sizeof(config_->automation_2)));
                 // command::create(cluster, chip::app::Clusters::DistributedDevice::command::add_automation::Id, COMMAND_FLAG_ACCEPTED | COMMAND_FLAG_CUSTOM, add_automation_callback);
                 // command::create(cluster, chip::app::Clusters::DistributedDevice::command::remove_automation::Id, COMMAND_FLAG_ACCEPTED | COMMAND_FLAG_CUSTOM, remove_automation_callback);
                 // command::create(cluster, chip::app::Clusters::DistributedDevice::command::set_automations::Id, COMMAND_FLAG_ACCEPTED | COMMAND_FLAG_CUSTOM, set_automations_callback);
 
-                ESP_LOGI(TAG_CUSTOM_CLUSTER, "Custom distributed Cluster created");
+                // esp_matter::attribute::val_print(endpoint, 0, 0, data, false);
 
                 return cluster;
             }

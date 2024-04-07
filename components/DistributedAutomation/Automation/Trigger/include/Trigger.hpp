@@ -28,6 +28,7 @@ public:
     virtual void Stop() = 0;
     bool HasTriggered();
     string GetAlias();
+    virtual string Print() = 0;
 
     virtual void IO(string attribute, string value);
 };

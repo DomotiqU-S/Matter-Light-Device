@@ -15,9 +15,10 @@ private:
     time_t delay_s;
 
 public:
-    ActionDelay(string alias, time_t delay_s);
+    ActionDelay(time_t delay_s);
     ~ActionDelay() override;
     void Do() override;
+    std::string Print() override;
 };
 
 #endif // CPP_ACTIONDELAY_HPP

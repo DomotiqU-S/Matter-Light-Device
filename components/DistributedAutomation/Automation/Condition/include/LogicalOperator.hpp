@@ -10,24 +10,7 @@ enum LogicalOperator
     INVALID
 };
 
-LogicalOperator GetLogicalOperator(std::string logicalOperator)
-{
-    if (logicalOperator == "AND")
-    {
-        return LogicalOperator::AND;
-    }
-    else if (logicalOperator == "OR")
-    {
-        return LogicalOperator::OR;
-    }
-    else if (logicalOperator == "NOT")
-    {
-        return LogicalOperator::NOT;
-    }
-    else
-    {
-        return LogicalOperator::INVALID;
-    }
-}
+LogicalOperator GetLogicalOperator(std::string logicalOperator);
+std::string GetLogicalOperatorString(LogicalOperator logicalOperator);
 
 #endif // LOGICALOPERATOR_HPP

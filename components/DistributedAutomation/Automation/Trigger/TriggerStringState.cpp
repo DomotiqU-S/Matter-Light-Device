@@ -39,3 +39,8 @@ void TriggerStringState::IO(string attribute, string value)
         this->previous_value = value;
     }
 }
+
+string TriggerStringState::Print()
+{
+    return "TriggerStringState: " + this->attribute + " " + this->from_state + " " + this->to_state;
+}

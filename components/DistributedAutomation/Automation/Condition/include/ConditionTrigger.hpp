@@ -18,9 +18,10 @@ protected:
     string trigger_alias;
 
 public:
-    explicit ConditionTrigger(string alias, string trigger_alias);
+    explicit ConditionTrigger(string trigger_alias);
     ~ConditionTrigger() override;
     bool Verify(string trigger_alias) override;
+    string Print() override;
 };
 
 #endif // CPP_CONDITIONTRIGGER_HPP

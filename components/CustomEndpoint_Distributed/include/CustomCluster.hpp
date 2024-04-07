@@ -9,7 +9,10 @@
 using namespace chip::app::Clusters;
 // using namespace esp_matter::cluster;
 
-// #include "DistributedDevice.hpp"
+#include "JsonUtils.hpp"
+#include "json.hpp"
+#include "Device.hpp"
+#include <string>
 
 #define TAG_CUSTOM_CLUSTER "CustomCluster"
 namespace chip
@@ -23,7 +26,7 @@ namespace chip
                 static constexpr ClusterId Id = 0x02;
                 namespace attribute
                 {
-                    namespace automations
+                    namespace automation_1
                     {
                         static constexpr AttributeId Id = 0x01;
                     }
@@ -59,15 +62,17 @@ namespace esp_matter
 
             typedef struct config_t
             {
-                char automations[MAX_AUTOMATIONS_LEN];
-                config_t() : automations{0} {}
+                char automation_1[MAX_AUTOMATIONS_LEN];
+                // char automation_2[MAX_AUTOMATIONS_LEN];
+                config_t() : automation_1{0} {} //, automation_2{0} {}
             } config_t;
 
             cluster_t *create(endpoint_t *endpoint, config_t *config_, uint8_t flags);
-            esp_err_t add_automation_callback(const ConcreteCommandPath &command_path, TLVReader &tlv_data, void *opaque_ptr);
-            esp_err_t remove_automation_callback(const ConcreteCommandPath &command_path, TLVReader &tlv_data, void *opaque_ptr);
+
+            // esp_err_t add_automation_callback(const ConcreteCommandPath &command_path, TLVReader &tlv_data, void *opaque_ptr);
+            // esp_err_t remove_automation_callback(const ConcreteCommandPath &command_path, TLVReader &tlv_data, void *opaque_ptr);
             // esp_err_t set_automations_callback(const ConcreteCommandPath &command_path, TLVReader &tlv_data, void *opaque_ptr);
-            esp_err_t set_automations_callback(esp_matter_attr_val_t *data);
+            esp_err_t set_automation_callback(esp_matter_attr_val_t *data);
             // esp_err_t parse_tlv(TLVReader &tlv_data, chip::CharSpan config_value);
         }
     }

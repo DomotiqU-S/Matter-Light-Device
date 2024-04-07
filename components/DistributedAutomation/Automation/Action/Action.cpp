@@ -4,9 +4,8 @@
 
 #include "Action.hpp"
 
-Action::Action(std::string alias)
+Action::Action()
 {
-    this->alias = std::move(alias);
 }
 
 Action::~Action() = default;

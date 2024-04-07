@@ -20,6 +20,7 @@ public:
                        std::string from_state, std::string to_state);
     void IO(string attribute, string value) override;
     ~TriggerStringState() = default;
+    string Print() override;
 };
 
 #endif // DISTRIBUTED_AUTOMATIONS_TRIGGERSTRINGSTATE_HPP

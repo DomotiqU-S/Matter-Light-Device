@@ -15,7 +15,7 @@
 #include "Trigger.hpp"
 #include "Condition.hpp"
 #include "Action.hpp"
-// #include "DistributedDevice.hpp"
+// #include "Device.hpp"
 
 class Automation
 {
@@ -49,6 +49,7 @@ public:
     vector<Action *> GetActions();
     vector<Trigger *> GetTriggers();
     bool HasTriggered();
+    string Print();
 
     // Functional
     void Run(condition_variable *cv, mutex *cv_m);

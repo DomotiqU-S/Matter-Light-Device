@@ -4,7 +4,7 @@
 
 #include "ConditionTrigger.hpp"
 
-ConditionTrigger::ConditionTrigger(string alias, string trigger_alias) : Condition(move(alias))
+ConditionTrigger::ConditionTrigger(string trigger_alias) : Condition()
 {
     this->trigger_alias = move(trigger_alias);
 }
@@ -15,3 +15,8 @@ bool ConditionTrigger::Verify(string alias)
 }
 
 ConditionTrigger::~ConditionTrigger() = default;
+
+string ConditionTrigger::Print()
+{
+    return "ConditionTrigger: " + this->trigger_alias;
+}

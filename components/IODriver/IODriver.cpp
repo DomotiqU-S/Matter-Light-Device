@@ -1,17 +1,18 @@
 #include "driver/gpio.h"
-#include <esp_log.h>
+// #include <esp_log.h>
 #include "IODriver.hpp"
 #include <esp_matter.h>
 #include "LightDriver.hpp"
 #include <stdlib.h>
 #include <string.h>
-#include "CustomEndpoint.hpp"
+#include "CustomCluster.hpp"
 
 using namespace chip::app::Clusters;
 using namespace esp_matter;
 
 static const char *TAG = "io_driver";
 extern uint16_t light_endpoint_id;
+extern uint16_t distributed_endpoint_id;
 
 LightDriver light_driver(5, 6);
 
@@ -95,13 +96,13 @@ esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_
             }
         }
     }
-    else if (endpoint_id == DISTRIBUTED_DEVICE_TYPE_ID)
+    else if (endpoint_id == distributed_endpoint_id)
     {
         if (cluster_id == DistributedDevice::Id)
         {
-            if (attribute_id == DistributedDevice::attribute::automations::Id)
+            if (attribute_id == DistributedDevice::attribute::automation_1::Id)
             {
-                err = esp_matter::cluster::distributed_device::set_automations_callback(val);
+                err = esp_matter::cluster::distributed_device::set_automation_callback(val);
             }
         }
     }

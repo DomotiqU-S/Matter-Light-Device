@@ -20,9 +20,10 @@ protected:
     string value;
 
 public:
-    explicit ConditionStringState(string alias, string attribute, time_t for_, string value);
+    explicit ConditionStringState(string attribute, time_t for_, string value);
     ~ConditionStringState() override;
     bool Verify(string trigger_alias) override;
+    string Print() override;
 };
 
 #endif // DISTRIBUTED_AUTOMATIONS_CONDITIONSTRINGSTATE_HPP

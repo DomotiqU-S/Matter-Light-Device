@@ -24,6 +24,7 @@ public:
     TriggerNumericState(string alias, string attribute, time_t for_s, double above, double below);
     void IO(string attribute, string value) override;
     ~TriggerNumericState();
+    string Print() override;
 };
 
 #endif // CPP_TRIGGERNUMERICSTATE_HPP

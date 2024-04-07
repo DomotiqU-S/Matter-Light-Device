@@ -16,9 +16,10 @@ protected:
     double below;
 
 public:
-    explicit ConditionNumericState(string alias, string attribute, time_t for_, double above, double below);
+    explicit ConditionNumericState(string attribute, time_t for_, double above, double below);
     ~ConditionNumericState() override;
     bool Verify(string trigger_alias) override;
+    std::string Print() override;
 };
 
 #endif // CPP_CONDITIONNUMERICSTATE_HPP

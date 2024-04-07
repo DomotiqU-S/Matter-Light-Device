@@ -4,7 +4,7 @@
 
 #include <device.h>
 #include <esp_matter.h>
-#include "DistributedDevice.hpp"
+// #include "Device.hpp"
 #include <app_priv.h>
 
 using namespace chip::app::Clusters;

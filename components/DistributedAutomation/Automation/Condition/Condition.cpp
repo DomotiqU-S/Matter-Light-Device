@@ -4,9 +4,8 @@
 
 #include "Condition.hpp"
 
-Condition::Condition(string alias)
+Condition::Condition()
 {
-    this->alias = alias;
 }
 
 bool Condition::Verify(string trigger_alias)

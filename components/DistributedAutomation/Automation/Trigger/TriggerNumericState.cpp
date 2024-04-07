@@ -35,3 +35,8 @@ void TriggerNumericState::IO(string attribute, string value)
 }
 
 TriggerNumericState::~TriggerNumericState() = default;
+
+string TriggerNumericState::Print()
+{
+    return "TriggerNumericState: " + this->attribute + " " + to_string(this->above) + " " + to_string(this->below);
+}

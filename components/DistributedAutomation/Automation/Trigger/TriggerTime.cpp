@@ -57,3 +57,8 @@ bool TriggerTime::IsRunning() const
 }
 
 TriggerTime::~TriggerTime() = default;
+
+string TriggerTime::Print()
+{
+    return "TriggerTime: " + this->alias + " " + cron::to_string(this->pattern);
+}

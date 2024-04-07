@@ -42,7 +42,7 @@ bool ConditionLogical::Verify(string trigger_alias)
     return false;
 }
 
-ConditionLogical::ConditionLogical(string alias, LogicalOperator logicalOperator, vector<Condition *> conditions) : Condition(alias)
+ConditionLogical::ConditionLogical(LogicalOperator logicalOperator, vector<Condition *> conditions) : Condition()
 {
     this->logicalOperator = logicalOperator;
     this->conditions = std::move(conditions);
@@ -56,3 +56,17 @@ ConditionLogical::~ConditionLogical()
     }
     this->conditions.clear();
 };
+
+string ConditionLogical::Print()
+{
+    string result = "(";
+    result += GetLogicalOperatorString(this->logicalOperator);
+    for (auto &condition : this->conditions)
+    {
+        result += condition->Print();
+        result += ",";
+    }
+    result.pop_back();
+    result += ")";
+    return result;
+}

@@ -65,3 +65,8 @@ void TriggerState::IOSup()
         this->cv_mother->notify_one();
     }
 }
+
+string TriggerState::Print()
+{
+    return this->alias + " " + this->attribute + " " + to_string(this->for_s);
+}

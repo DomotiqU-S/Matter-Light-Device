@@ -4,8 +4,8 @@
 
 #include "ConditionNumericState.hpp"
 
-ConditionNumericState::ConditionNumericState(string alias, string attribute, time_t for_, double above,
-                                             double below) : ConditionState(std::move(alias), std::move(attribute), for_)
+ConditionNumericState::ConditionNumericState(string attribute, time_t for_, double above,
+                                             double below) : ConditionState(std::move(attribute), for_)
 {
     this->above = above;
     this->below = below;
@@ -30,3 +30,8 @@ bool ConditionNumericState::Verify(string trigger_alias)
 }
 
 ConditionNumericState::~ConditionNumericState() = default;
+
+std::string ConditionNumericState::Print()
+{
+    return "ConditionNumericState: " + this->attribute + " " + to_string(this->above) + " " + to_string(this->below);
+}

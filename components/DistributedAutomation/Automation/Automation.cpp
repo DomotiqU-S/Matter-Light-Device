@@ -169,3 +169,25 @@ void Automation::IO(string attribute, string value)
         trigger->IO(attribute, value);
     }
 }
+
+std::string Automation::Print()
+{
+    std::string result = "Automation: " + this->alias + "\n";
+    result += "Description: " + this->description + "\n";
+    result += "Triggers: \n";
+    for (auto &trigger : this->triggers)
+    {
+        result += trigger->Print();
+    }
+    result += "Conditions: \n";
+    for (auto &condition : this->conditions)
+    {
+        result += condition->Print();
+    }
+    result += "Actions: \n";
+    for (auto &action : this->actions)
+    {
+        result += action->Print();
+    }
+    return result;
+}

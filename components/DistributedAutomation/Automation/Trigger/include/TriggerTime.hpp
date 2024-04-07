@@ -30,6 +30,7 @@ public:
     void SetPattern(const string &pattern_);
     bool IsRunning() const;
     ~TriggerTime();
+    string Print() override;
 };
 
 #endif // CPP_TRIGGERTIMEPATTERN_HPP
