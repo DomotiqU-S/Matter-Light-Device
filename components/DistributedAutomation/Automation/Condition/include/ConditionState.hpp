@@ -6,9 +6,9 @@
 #define CPP_CONDITIONSTATE_HPP
 
 #include "Condition.hpp"
-#include "DistributedDevice.hpp"
 #include <utility>
 #include <string>
+#include "State.hpp"
 
 class ConditionState : public Condition
 {
@@ -20,9 +20,10 @@ protected:
     bool Verify_(const State &state_) const;
 
 public:
-    explicit ConditionState(string alias, string attribute, time_t for_);
+    explicit ConditionState(string attribute, time_t for_);
     ~ConditionState() override;
     bool Verify(string trigger_alias) override;
+    string Print() override;
 };
 
 #endif // CPP_CONDITIONSTATE_HPP

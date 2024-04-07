@@ -6,7 +6,8 @@
 #define CPP_CONDITIONNUMERICSTATE_HPP
 
 #include "ConditionState.hpp"
-#include "json.hpp"
+#include "StateCollection.hpp"
+#include "State.hpp"
 
 class ConditionNumericState : public ConditionState
 {
@@ -15,11 +16,10 @@ protected:
     double below;
 
 public:
-    explicit ConditionNumericState(string alias, string attribute, time_t for_, double above, double below);
+    explicit ConditionNumericState(string attribute, time_t for_, double above, double below);
     ~ConditionNumericState() override;
     bool Verify(string trigger_alias) override;
-
-    static ConditionNumericState *Json2Condition(nlohmann::json json);
+    std::string Print() override;
 };
 
 #endif // CPP_CONDITIONNUMERICSTATE_HPP

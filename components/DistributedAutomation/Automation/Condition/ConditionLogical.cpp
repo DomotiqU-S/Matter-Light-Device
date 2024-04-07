@@ -35,11 +35,14 @@ bool ConditionLogical::Verify(string trigger_alias)
             }
         }
         return false;
+    case INVALID:
+        return false;
     }
+
     return false;
 }
 
-ConditionLogical::ConditionLogical(string alias, LogicalOperator logicalOperator, vector<Condition *> conditions) : Condition(alias)
+ConditionLogical::ConditionLogical(LogicalOperator logicalOperator, vector<Condition *> conditions) : Condition()
 {
     this->logicalOperator = logicalOperator;
     this->conditions = std::move(conditions);
@@ -54,14 +57,16 @@ ConditionLogical::~ConditionLogical()
     this->conditions.clear();
 };
 
-static ConditionLogical *ConditionLogical::Json2Condition(nlohmann::json json)
+string ConditionLogical::Print()
 {
-    string alias = json["alias"];
-    LogicalOperator logicalOperator = json["logicalOperator"];
-    vector<Condition *> conditions;
-    for (auto &condition : json["conditions"])
+    string result = "(";
+    result += GetLogicalOperatorString(this->logicalOperator);
+    for (auto &condition : this->conditions)
     {
-        conditions.push_back(Condition::Json2Condition(condition.dump()));
+        result += condition->Print();
+        result += ",";
     }
-    return new ConditionLogical(alias, logicalOperator, conditions);
+    result.pop_back();
+    result += ")";
+    return result;
 }

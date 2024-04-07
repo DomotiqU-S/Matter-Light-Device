@@ -26,6 +26,7 @@ public:
     void Stop() override;
     virtual void IO(string attribute, string value) = 0;
     ~TriggerState();
+    string Print() override;
 };
 
 #endif // CPP_TRIGGERSTATE_HPP

@@ -8,6 +8,8 @@
 #include "ConditionState.hpp"
 #include <string>
 #include "json.hpp"
+#include "StateCollection.hpp"
+#include "State.hpp"
 
 using namespace std;
 
@@ -18,11 +20,10 @@ protected:
     string value;
 
 public:
-    explicit ConditionStringState(string alias, string attribute, time_t for_, string value);
+    explicit ConditionStringState(string attribute, time_t for_, string value);
     ~ConditionStringState() override;
     bool Verify(string trigger_alias) override;
-
-    static ConditionStringState *Json2Condition(nlohmann::json json);
+    string Print() override;
 };
 
 #endif // DISTRIBUTED_AUTOMATIONS_CONDITIONSTRINGSTATE_HPP

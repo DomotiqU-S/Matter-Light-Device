@@ -24,7 +24,7 @@ public:
     TriggerNumericState(string alias, string attribute, time_t for_s, double above, double below);
     void IO(string attribute, string value) override;
     ~TriggerNumericState();
-    static TriggerNumericState *Json2Trigger(nlohmann::json json);
+    string Print() override;
 };
 
 #endif // CPP_TRIGGERNUMERICSTATE_HPP

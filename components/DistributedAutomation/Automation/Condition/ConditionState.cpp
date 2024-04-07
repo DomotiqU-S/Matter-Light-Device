@@ -4,7 +4,7 @@
 
 #include "ConditionState.hpp"
 
-ConditionState::ConditionState(string alias, string attribute, time_t for_) : Condition(std::move(alias))
+ConditionState::ConditionState(string attribute, time_t for_) : Condition()
 {
     this->attribute = std::move(attribute);
     this->for_ = for_;
@@ -33,3 +33,8 @@ bool ConditionState::Verify(string trigger_alias)
 }
 
 ConditionState::~ConditionState() = default;
+
+std::string ConditionState::Print()
+{
+    return "ConditionState: " + this->attribute;
+}

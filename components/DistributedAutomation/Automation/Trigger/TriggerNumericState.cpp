@@ -36,12 +36,7 @@ void TriggerNumericState::IO(string attribute, string value)
 
 TriggerNumericState::~TriggerNumericState() = default;
 
-static TriggerNumericState *TriggerNumericState::Json2Trigger(nlohmann::json json)
+string TriggerNumericState::Print()
 {
-    string alias = json["alias"];
-    string attribute = json["attribute"];
-    time_t for_s = json["for_s"];
-    double above = json["above"];
-    double below = json["below"];
-    return new TriggerNumericState(alias, attribute, for_s, above, below);
+    return "TriggerNumericState: " + this->attribute + " " + to_string(this->above) + " " + to_string(this->below);
 }

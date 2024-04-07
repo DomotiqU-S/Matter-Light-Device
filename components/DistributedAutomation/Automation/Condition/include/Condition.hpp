@@ -12,15 +12,11 @@ using namespace std;
 
 class Condition
 {
-protected:
-    string alias;
-
 public:
-    explicit Condition(string alias);
+    explicit Condition();
     virtual ~Condition();
     virtual bool Verify(string trigger_alias);
-
-    static Condition *Json2Condition(nlohmann::json json);
+    virtual string Print() = 0;
 };
 
 #endif // CPP_CONDITION_HPP

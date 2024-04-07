@@ -15,13 +15,11 @@ using namespace std;
 class Action
 {
 public:
-    explicit Action(std::string alias);
+    explicit Action();
     virtual ~Action();
     virtual void Do() = 0;
-
+    virtual std::string Print() = 0;
     std::string alias;
-
-    static Action *Json2Action(nlohmann::json json);
 };
 
 #endif // DISTRIBUTED_SERVER_ACTION_HPP

@@ -28,10 +28,9 @@ public:
     virtual void Stop() = 0;
     bool HasTriggered();
     string GetAlias();
+    virtual string Print() = 0;
 
     virtual void IO(string attribute, string value);
-
-    static Trigger *Json2Trigger(nlohmann::json json);
 };
 
 #endif // CPP_TRIGGER_HPP

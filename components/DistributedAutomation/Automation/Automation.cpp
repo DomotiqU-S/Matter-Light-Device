@@ -170,26 +170,24 @@ void Automation::IO(string attribute, string value)
     }
 }
 
-static Automation *Automation::Json2Automation(nlohmann::json json)
+std::string Automation::Print()
 {
-    string alias = json["alias"];
-    string description = json["description"];
-    vector<Trigger *> triggers;
-    vector<Condition *> conditions;
-    vector<Action *> actions;
-
-    for (auto &trigger : json["triggers"])
+    std::string result = "Automation: " + this->alias + "\n";
+    result += "Description: " + this->description + "\n";
+    result += "Triggers: \n";
+    for (auto &trigger : this->triggers)
     {
-        triggers.push_back(Trigger::Json2Trigger(trigger));
+        result += trigger->Print();
     }
-    for (auto &condition : json["conditions"])
+    result += "Conditions: \n";
+    for (auto &condition : this->conditions)
     {
-        conditions.push_back(Condition::Json2Condition(condition));
+        result += condition->Print();
     }
-    for (auto &action : json["actions"])
+    result += "Actions: \n";
+    for (auto &action : this->actions)
     {
-        actions.push_back(Action::Json2Action(action));
+        result += action->Print();
     }
-
-    return new Automation(alias, description, triggers, conditions, actions);
+    return result;
 }

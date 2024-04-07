@@ -29,20 +29,3 @@ string Trigger::GetAlias()
 {
     return this->alias;
 }
-
-static Trigger *Trigger::Json2Trigger(nlohmann::json json)
-{
-    string type = json["type"];
-
-    switch (type)
-    {
-    case "TriggerNumericState":
-        return TriggerNumericState::Json2Trigger(json);
-    case "TriggerStringState":
-        return TriggerStringState::Json2Trigger(json);
-    case "TriggerTime":
-        return TriggerTime::Json2Trigger(json);
-    default:
-        return nullptr;
-    }
-}

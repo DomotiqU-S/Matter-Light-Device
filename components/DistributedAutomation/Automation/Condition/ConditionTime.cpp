@@ -4,7 +4,7 @@
 
 #include "ConditionTime.hpp"
 
-ConditionTime::ConditionTime(string alias, tm after, tm before, vector<string> weekday) : Condition(alias)
+ConditionTime::ConditionTime(tm after, tm before, vector<string> weekday) : Condition()
 {
     this->after = after;
     this->before = before;
@@ -40,11 +40,7 @@ bool ConditionTime::Verify(string trigger_alias)
 
 ConditionTime::~ConditionTime() = default;
 
-static ConditionTime *ConditionTime::Json2Condition(nlohmann::json json)
+string ConditionTime::Print()
 {
-    string alias = json["alias"];
-    tm after = json["after"];
-    tm before = json["before"];
-    vector<string> weekday = json["weekday"];
-    return new ConditionTime(alias, after, before, weekday);
+    return "ConditionTime: " + to_string(after.tm_hour) + ":" + to_string(after.tm_min) + ":" + to_string(after.tm_sec) + " - " + to_string(before.tm_hour) + ":" + to_string(before.tm_min) + ":" + to_string(before.tm_sec);
 }

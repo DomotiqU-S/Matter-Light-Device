@@ -40,12 +40,7 @@ void TriggerStringState::IO(string attribute, string value)
     }
 }
 
-static TriggerStringState *TriggerStringState::Json2Trigger(nlohmann::json json)
+string TriggerStringState::Print()
 {
-    string alias = json["alias"];
-    string attribute = json["attribute"];
-    time_t for_s = json["for_s"];
-    string from_state = json["from_state"];
-    string to_state = json["to_state"];
-    return new TriggerStringState(alias, attribute, for_s, from_state, to_state);
+    return "TriggerStringState: " + this->attribute + " " + this->from_state + " " + this->to_state;
 }

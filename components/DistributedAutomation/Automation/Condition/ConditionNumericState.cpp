@@ -4,8 +4,8 @@
 
 #include "ConditionNumericState.hpp"
 
-ConditionNumericState::ConditionNumericState(string alias, string attribute, time_t for_, double above,
-                                             double below) : ConditionState(std::move(alias), std::move(attribute), for_)
+ConditionNumericState::ConditionNumericState(string attribute, time_t for_, double above,
+                                             double below) : ConditionState(std::move(attribute), for_)
 {
     this->above = above;
     this->below = below;
@@ -13,7 +13,7 @@ ConditionNumericState::ConditionNumericState(string alias, string attribute, tim
 
 bool ConditionNumericState::Verify(string trigger_alias)
 {
-    State state_ = DistributedDevice::Instance().GetAttribute(this->attribute);
+    State state_ = StateCollection::Instance().GetAttribute(this->attribute);
     // try
     // {
     float value = stof(state_.value);
@@ -31,12 +31,7 @@ bool ConditionNumericState::Verify(string trigger_alias)
 
 ConditionNumericState::~ConditionNumericState() = default;
 
-static ConditionNumericState *ConditionNumericState::Json2Condition(nlohmann::json json)
+std::string ConditionNumericState::Print()
 {
-    string alias = json["alias"];
-    string attribute = json["attribute"];
-    time_t for_ = json["for"];
-    double above = json["above"];
-    double below = json["below"];
-    return new ConditionNumericState(alias, attribute, for_, above, below);
+    return "ConditionNumericState: " + this->attribute + " " + to_string(this->above) + " " + to_string(this->below);
 }

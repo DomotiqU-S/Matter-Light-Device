@@ -9,13 +9,7 @@
 #include "Condition.hpp"
 #include <utility>
 #include "json.hpp"
-
-enum LogicalOperator
-{
-    AND,
-    OR,
-    NOT
-};
+#include "LogicalOperator.hpp"
 
 class ConditionLogical : public Condition
 {
@@ -24,11 +18,10 @@ protected:
     vector<Condition *> conditions;
 
 public:
-    explicit ConditionLogical(string alias, LogicalOperator logicalOperator, vector<Condition *> conditions);
+    explicit ConditionLogical(LogicalOperator logicalOperator, vector<Condition *> conditions);
     ~ConditionLogical() override;
     bool Verify(string trigger_alias) override;
-
-    static ConditionLogical *Json2Condition(nlohmann::json json);
+    string Print() override;
 };
 
 #endif // CPP_CONDITIONLOGICAL_HPP

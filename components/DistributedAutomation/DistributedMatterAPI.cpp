@@ -34,15 +34,15 @@ vector<Automation *> DistributedMatterAPI::GetAutomations(const string &alias)
 
     vector<Condition *> conditions = vector<Condition *>();
     vector<Condition *> conditions_log = vector<Condition *>();
-    auto condition_1 = new ConditionTrigger("condition_1", "trigger_4");
+    auto condition_1 = new ConditionTrigger("trigger_4");
     conditions_log.push_back(condition_1);
-    auto condition_2 = new ConditionNumericState("condition_2", "brightness", 0, 30, 255);
+    auto condition_2 = new ConditionNumericState("brightness", 0, 30, 255);
     conditions_log.push_back(condition_2);
-    auto condition_3 = new ConditionLogical("condition_3", AND, conditions_log);
+    auto condition_3 = new ConditionLogical(AND, conditions_log);
     conditions.push_back(condition_3);
 
     vector<Action *> actions = vector<Action *>();
-    auto action = new ActionDelay("action_1", 0);
+    auto action = new ActionDelay(0);
     actions.push_back(action);
 
     vector<Automation *> automation_vector;

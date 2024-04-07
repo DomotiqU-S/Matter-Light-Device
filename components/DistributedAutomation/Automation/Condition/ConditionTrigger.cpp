@@ -4,7 +4,7 @@
 
 #include "ConditionTrigger.hpp"
 
-ConditionTrigger::ConditionTrigger(string alias, string trigger_alias) : Condition(move(alias))
+ConditionTrigger::ConditionTrigger(string trigger_alias) : Condition()
 {
     this->trigger_alias = move(trigger_alias);
 }
@@ -16,9 +16,7 @@ bool ConditionTrigger::Verify(string alias)
 
 ConditionTrigger::~ConditionTrigger() = default;
 
-static ConditionTrigger *ConditionTrigger::Json2Condition(nlohmann::json json)
+string ConditionTrigger::Print()
 {
-    string alias = json["alias"];
-    string trigger_alias = json["trigger_alias"];
-    return new ConditionTrigger(alias, trigger_alias);
+    return "ConditionTrigger: " + this->trigger_alias;
 }

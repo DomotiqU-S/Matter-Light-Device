@@ -21,11 +21,10 @@ protected:
     vector<string> weekday;
 
 public:
-    explicit ConditionTime(string alias, tm after, tm before, vector<string> weekday);
+    explicit ConditionTime(tm after, tm before, vector<string> weekday);
     ~ConditionTime() override;
     bool Verify(string trigger_alias) override;
-
-    static ConditionTime *Json2Condition(nlohmann::json json);
+    string Print() override;
 };
 
 #endif // CPP_CONDITIONTIME_HPP
