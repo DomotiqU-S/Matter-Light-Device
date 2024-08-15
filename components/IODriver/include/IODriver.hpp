@@ -4,6 +4,8 @@
 #include <esp_err.h>
 #include <esp_matter.h>
 
+#define DEBUG_DRIVER 1
+
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #include "esp_openthread_types.h"
 #endif
@@ -27,6 +29,8 @@
 #define DEFAULT_SATURATION 254
 
 typedef void *app_driver_handle_t;
+
+esp_err_t set_color_from_attribute(uint32_t attribute_id, esp_matter_attr_val_t *val);
 
 /** Initialize the light driver
  *

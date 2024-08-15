@@ -11,6 +11,12 @@ dependencies:
       service_url: https://api.components.espressif.com/
       type: service
     version: 0.6.0~1
+  espressif/esp-serial-flasher:
+    component_hash: dcc42a16712a1a636509cf0bf90e14032d7f2141784b533613b267b6aa318d52
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 0.0.11
   espressif/esp_diag_data_store:
     component_hash: 8849195251dbb8a2d7268335277cfa310cef36e4ac1e90cd59ad3be4269a30d7
     source:
@@ -35,6 +41,12 @@ dependencies:
       service_url: https://api.components.espressif.com/
       type: service
     version: 1.0.1
+  espressif/esp_rcp_update:
+    component_hash: 53493f50c3ac3ea24923652cddaf5a7fff478ca80c024603ba25c96dfa0be965
+    source:
+      service_url: https://api.components.espressif.com/
+      type: service
+    version: 1.0.3
   espressif/esp_secure_cert_mgr:
     component_hash: a20007d67e65a000670ab77e45d7554c943eb8dcb0abeada0a57dd9adac3a703
     source:
@@ -72,16 +84,16 @@ dependencies:
       type: service
     version: 1.2.5
   espressif/rmaker_common:
-    component_hash: 021c02465e4996dd3292db36ea47b5e3122e7e2d3514797735a96bc12598b44f
+    component_hash: a3a1df881278d0351fc850b77792fe8a196ddd6dcacbea203d606329cc6a0239
     source:
       service_url: https://api.components.espressif.com/
       type: service
-    version: 1.4.5
+    version: 1.4.6
   idf:
     component_hash: null
     source:
       type: idf
     version: 5.3.0
-manifest_hash: 323d537f45685b0d503a7a63fc9f7d4721e9cbbf2694fed5ccafe470ad1cf5e7
+manifest_hash: 01942015a336a3e8bce9e99f677e7ac549535ebef799dcae23974773d64e2e0d
 target: esp32s3
 version: 1.0.0

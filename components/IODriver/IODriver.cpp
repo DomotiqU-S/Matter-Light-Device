@@ -14,17 +14,50 @@ extern uint16_t light_endpoint_id;
 
 LightDriver light_driver(5, 6);
 
+esp_err_t set_color_from_attribute(uint32_t attribute_id, esp_matter_attr_val_t *val) {
+    esp_err_t err = ESP_OK;
+    
+    #ifdef DEBUG_DRIVER
+        ESP_LOGI(TAG, "ColorControl::Id");
+        ESP_LOGI(TAG, "attribute_id: %lu", attribute_id);
+    #endif
+
+    switch(attribute_id) {
+        case ColorControl::Attributes::CurrentX::Id:
+            break;
+        case ColorControl::Attributes::CurrentY::Id:
+            break;
+        case ColorControl::Attributes::CurrentHue::Id:
+            err = light_driver.set_hue(val->val.u16);
+            break;
+        case ColorControl::Attributes::CurrentSaturation::Id:
+            err = light_driver.set_saturation(val->val.u16);
+            break;
+        case ColorControl::Attributes::ColorTemperatureMireds::Id:
+            err = light_driver.set_temperature(val->val.u32);
+            break;
+        default:
+            break;
+    }
+
+    return err;
+}
+
 /* Do any conversions/remapping for the actual value here */
 static esp_err_t app_driver_light_set_power(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
-    ESP_LOGE(TAG, "power: %d", val->val.b);
+    #ifdef DEBUG_DRIVER
+        ESP_LOGE(TAG, "power: %d", val->val.b);
+    #endif
     return light_driver.set_power(val->val.b);
 }
 
 static esp_err_t app_driver_light_set_brightness(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
     int value = REMAP_TO_RANGE(val->val.u8, MATTER_BRIGHTNESS, STANDARD_BRIGHTNESS);
-    ESP_LOGE(TAG, "brightness: %d", value);
+    #ifdef DEBUG_DRIVER
+        ESP_LOGE(TAG, "brightness: %d", value);
+    #endif
     return light_driver.set_brightness((uint16_t)value); //led_driver_set_brightness(handle, value);
 }
 
@@ -52,35 +85,34 @@ esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_
                                       uint32_t attribute_id, esp_matter_attr_val_t *val)
 {
     esp_err_t err = ESP_OK;
-    if (endpoint_id == light_endpoint_id) {
-        led_driver_handle_t handle = (led_driver_handle_t)driver_handle;
-        ESP_LOGE(TAG, "light_endpoint_id");
-        if (cluster_id == OnOff::Id) {
-            if (attribute_id == OnOff::Attributes::OnOff::Id) {
-                ESP_LOGE(TAG, "OnOff::Attributes::OnOff::Id");
-                err = app_driver_light_set_power(handle, val);
-            }
-        } else if (cluster_id == LevelControl::Id) {
-            if (attribute_id == LevelControl::Attributes::CurrentLevel::Id) {
-                ESP_LOGE(TAG, "LevelControl::Attributes::CurrentLevel::Id");
-                err = app_driver_light_set_brightness(handle, val);
-            }
-        } else if (cluster_id == ColorControl::Id) {
-            ESP_LOGE(TAG, "ColorControl::Id");
-            ESP_LOGE(TAG, "attribute_id: %lu", attribute_id);
-            if (attribute_id == ColorControl::Attributes::CurrentHue::Id) {
-                err = app_driver_light_set_hue(handle, val);
-            } else if (attribute_id == ColorControl::Attributes::CurrentSaturation::Id) {
-                err = app_driver_light_set_saturation(handle, val);
-            } else if (attribute_id == ColorControl::Attributes::ColorTemperatureMireds::Id) {
-                err = app_driver_light_set_temperature(handle, val);
-            }
+    led_driver_handle_t handle = (led_driver_handle_t)driver_handle;
 
-            if (attribute_id == ColorControl::Attributes::CurrentX::Id) {
-                ESP_LOGI(TAG, "ColorControl::Attributes::CurrentX::Id");
-            } else if (attribute_id == ColorControl::Attributes::CurrentY::Id) {
-                ESP_LOGI(TAG, "ColorControl::Attributes::CurrentY::Id");
-            }
+    if (endpoint_id == light_endpoint_id) {
+        switch(cluster_id) {
+            case OnOff::Id:
+                #ifdef DEBUG_DRIVER
+                    ESP_LOGI(TAG, "OnOff::Id");
+                #endif
+                if(attribute_id == OnOff::Attributes::OnOff::Id) {
+                    err = light_driver.set_power(val->val.b);
+                }
+                break;
+            case LevelControl::Id:
+                #ifdef DEBUG_DRIVER
+                    ESP_LOGI(TAG, "LevelControl::Attributes::CurrentLevel::Id");
+                #endif
+                if(attribute_id == LevelControl::Attributes::CurrentLevel::Id) {
+                    err = light_driver.set_brightness(val->val.u8);
+                }
+                break;
+            case ColorControl::Id:
+                // Control temperature
+                // Control Hue & saturation
+                // Control XY color
+                err = set_color_from_attribute(attribute_id, val);
+                break;
+            default:
+                break;
         }
     }
     ESP_LOGI(TAG, "Endpoint ID: %d", endpoint_id);
@@ -109,7 +141,7 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
     cluster = cluster::get(endpoint, ColorControl::Id);
     attribute = attribute::get(cluster, ColorControl::Attributes::ColorMode::Id);
     attribute::get_val(attribute, &val);
-    if (val.val.u8 == (uint8_t)ColorControl::ColorMode::EMBER_ZCL_COLOR_MODE_CURRENT_HUE_AND_CURRENT_SATURATION) {
+    if (val.val.u8 == (uint8_t)ColorControl::ColorMode::kCurrentHueAndCurrentSaturation) {
         /* Setting hue */
         attribute = attribute::get(cluster, ColorControl::Attributes::CurrentHue::Id);
         attribute::get_val(attribute, &val);
@@ -118,7 +150,7 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
         attribute = attribute::get(cluster, ColorControl::Attributes::CurrentSaturation::Id);
         attribute::get_val(attribute, &val);
         err |= app_driver_light_set_saturation(handle, &val);
-    } else if (val.val.u8 == (uint8_t)ColorControl::ColorMode::EMBER_ZCL_COLOR_MODE_COLOR_TEMPERATURE) {
+    } else if (val.val.u8 == (uint8_t)ColorControl::ColorMode::kColorTemperature) {
         /* Setting temperature */
         attribute = attribute::get(cluster, ColorControl::Attributes::ColorTemperatureMireds::Id);
         attribute::get_val(attribute, &val);

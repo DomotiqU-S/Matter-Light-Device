@@ -149,7 +149,7 @@ extern "C" void app_main()
     node::config_t node_config;
     node_t *node = node::create(&node_config, app_attribute_update_cb, app_identification_cb);
 
-    endpoint_t *ret = configureLight(ENDPOINT_FLAG_NONE, light_handle, node);
+    esp_err_t ret = configureLight(ENDPOINT_FLAG_NONE, light_handle, node);
 
     /* These node and endpoint handles can be used to create/add other endpoints and clusters. */
     if (!node || ret != ESP_OK) {
