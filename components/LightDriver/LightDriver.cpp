@@ -17,11 +17,17 @@ esp_err_t LightDriver::set_brightness(uint8_t brightness)
 
 esp_err_t LightDriver::set_hue(uint16_t hue)
 {
+    if(m_gpio_type.gpio_red_light != 0 && m_gpio_type.gpio_green_light != 0 && m_gpio_type.gpio_blue_light != 0) {
+
+    }
     return ESP_OK;
 }
 
 esp_err_t LightDriver::set_saturation(uint8_t saturation)
 {
+    if(m_gpio_type.gpio_red_light != 0 && m_gpio_type.gpio_green_light != 0 && m_gpio_type.gpio_blue_light != 0) {
+        
+    }
     return ESP_OK;
 }
 
@@ -33,4 +39,8 @@ esp_err_t LightDriver::set_temperature(uint32_t temperature)
 led_driver_handle_t LightDriver::init()
 {
     return nullptr;
+}
+
+esp_err_t LightDriver::set_color(uint16_t x, uint16_t y) {
+    return ESP_OK;
 }
