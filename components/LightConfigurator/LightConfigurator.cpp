@@ -11,6 +11,21 @@ esp_err_t configureLight(uint8_t flags, void *priv_data, esp_matter::node_t *nod
 
     #if LIGHT_TYPE == ON_OFF_TYPE_LIGHT
         on_off_light::config_t light;
+        
+        light.on_off.on_off = false;
+        light.on_off.lighting.start_up_on_off = nullptr;
+
+        priv_endpoint = on_off_light::create(node, &light, flags, priv_data);
+
+    #elif LIGHT_TYPE == DIMMABLE_TYPE_LIGHT
+
+        light.on_off.on_off = false;
+        light.on_off.lighting.start_up_on_off = nullptr;
+        light.level_control.current_level = 100;
+        light.level_control.lighting.start_up_current_level = 100;
+
+        priv_endpoint = dimmable_light::create(node, &light, flags, priv_data);
+
     #elif LIGHT_TYPE == COLOR_TEMPERATURE_TYPE_LIGHT
         color_temperature_light::config_t light;
 

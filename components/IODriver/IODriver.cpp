@@ -16,6 +16,7 @@ LightDriver light_driver(5, 6);
 
 esp_err_t set_color_from_attribute(uint32_t attribute_id, esp_matter_attr_val_t *val) {
     esp_err_t err = ESP_OK;
+    uint32_t temperature = 0;
     
     #ifdef DEBUG_DRIVER
         ESP_LOGI(TAG, "ColorControl::Id");
@@ -24,19 +25,29 @@ esp_err_t set_color_from_attribute(uint32_t attribute_id, esp_matter_attr_val_t 
 
     switch(attribute_id) {
         case ColorControl::Attributes::CurrentX::Id:
-            err = light_driver.set_color(val->val.u16, 0);
+                err = light_driver.set_color(val->val.u16, 0);
             break;
         case ColorControl::Attributes::CurrentY::Id:
-            err = light_driver.set_color(0, val->val.u16);
+                err = light_driver.set_color(0, val->val.u16);
             break;
         case ColorControl::Attributes::CurrentHue::Id:
-            err = light_driver.set_hue(val->val.u16);
+                #ifdef DEBUG_DRIVER
+                    ESP_LOGI(TAG, "HUE value: %u", val->val.u16);
+                #endif
+                err = light_driver.set_hue(val->val.u16);
             break;
         case ColorControl::Attributes::CurrentSaturation::Id:
-            err = light_driver.set_saturation(val->val.u16);
+                #ifdef DEBUG_DRIVER
+                    ESP_LOGI(TAG, "Saturation value: %u", val->val.u16);
+                #endif
+                err = light_driver.set_saturation(val->val.u16);
             break;
         case ColorControl::Attributes::ColorTemperatureMireds::Id:
-            err = light_driver.set_temperature(val->val.u32);
+                temperature = REMAP_TO_RANGE_INVERSE(val->val.u32, STANDARD_TEMPERATURE_FACTOR);
+                #ifdef DEBUG_DRIVER
+                    ESP_LOGI(TAG, "TEMP value: %lu", temperature);
+                #endif
+                err = light_driver.set_temperature(temperature);
             break;
         default:
             break;
@@ -163,15 +174,6 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
         // attribute::get_val(attribute, &val);
         val.val.u16 = DEFAULT_TEMPERATURE;
         err |= app_driver_light_set_temperature(handle, &val);
-    } 
-    else {
-        ESP_LOGI(TAG, "Color mode to be implemented");
-        attribute = attribute::get(cluster, ColorControl::Attributes::CurrentX::Id);
-        attribute::get_val(attribute, &val);
-        ESP_LOGI(TAG, "CurrentX: %d", val.val.u16);
-        attribute = attribute::get(cluster, ColorControl::Attributes::CurrentY::Id);
-        attribute::get_val(attribute, &val);
-        ESP_LOGI(TAG, "CurrentY: %d", val.val.u16);
     }
 
     /* Setting power */
@@ -189,19 +191,4 @@ app_driver_handle_t app_driver_light_init()
     // TODO: Add LED driver 
     led_driver_handle_t handle = light_driver.init();
     return (app_driver_handle_t)handle;
-}
-
-esp_err_t convert_xy_srgb(uint16_t x, uint16_t y) {
-    float x_f = x / 1000.0;
-    float y_f = y / 1000.0;
-
-    float r_linear = x_f * XSM[0] + y_f * XSM[1];
-    float g_linear = x_f * XSM[2] + y_f * XSM[3];
-    float b_linear = x_f * XSM[4] + y_f * XSM[5];
-
-    // Transfert the values then clamp it
-
-    // Finally convert to 8 bit values.
-
-    return ESP_OK;
 }

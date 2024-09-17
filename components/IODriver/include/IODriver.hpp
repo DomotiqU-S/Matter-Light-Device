@@ -27,17 +27,9 @@
 #define DEFAULT_BRIGHTNESS 60
 #define DEFAULT_HUE 140
 #define DEFAULT_SATURATION 216
-#define DEFAULT_TEMPERATURE 4000
-
-const float XSM[6] = {
-    3.2406255, -1.537208,
-    -0.9689307, 1.8757561,
-    0.0557101, -0.2040211,
-};
+#define DEFAULT_TEMPERATURE 217
 
 typedef void *app_driver_handle_t;
-
-esp_err_t convert_xy_srgb(uint16_t x, uint16_t y);
 
 esp_err_t set_color_from_attribute(uint32_t attribute_id, esp_matter_attr_val_t *val);
 

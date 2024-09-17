@@ -21,7 +21,7 @@
 #include "LightConfigurator.hpp"
 
 static const char *TAG = "app_main";
-uint16_t light_endpoint_id = 0;
+uint16_t light_endpoint_id = 1;
 
 using namespace esp_matter;
 using namespace esp_matter::attribute;

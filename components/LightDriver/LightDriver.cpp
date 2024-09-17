@@ -12,6 +12,7 @@ esp_err_t LightDriver::set_power(bool power)
 
 esp_err_t LightDriver::set_brightness(uint8_t brightness)
 {
+    ESP_LOGE("LightDriver", "brightness: %d", brightness);
     return led.setIntensity(brightness);
 }
 
@@ -33,6 +34,7 @@ esp_err_t LightDriver::set_saturation(uint8_t saturation)
 
 esp_err_t LightDriver::set_temperature(uint32_t temperature)
 {
+    ESP_LOGE("LightDriver", "TEMP value: %lu", temperature);
     return led.setTemperature((uint16_t)temperature);
 }
 

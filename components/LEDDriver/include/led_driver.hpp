@@ -15,19 +15,19 @@
 #define TAG_SENSOR          "LED_DRIVER"                            // Tag for the logs
 #define LEDC_TIMER          LEDC_TIMER_0                            // LEDC timer
 #define LEDC_MODE           LEDC_LOW_SPEED_MODE                     // LEDC speed mode
-#define LEDC_WARM           5                                       // Define the output GPIO
-#define LEDC_COOL           4                                       // Define the output GPIO
-#define LEDC_DUTY_RES       LEDC_TIMER_10_BIT                       // Set duty resolution to 13 bits
-#define MAX_DUTY            (uint32_t)1024                          // Maximum duty for 13 bits
-#define LEDC_FREQUENCY      (uint32_t)5000                         // Frequency in Hertz. Set frequency at 50 kHz for hearing protection
+#define LEDC_WARM           4                                       // Define the output GPIO
+#define LEDC_COOL           5                                       // Define the output GPIO
+#define LEDC_DUTY_RES       LEDC_TIMER_10_BIT                       // Set duty resolution to 10 bits
+#define MAX_DUTY            (uint32_t)1024                          // Maximum duty for 10 bits
+#define LEDC_FREQUENCY      (uint32_t)20000                         // Frequency in Hertz. Set frequency at 20 kHz
 #define MAX_TEMPERATURE     6500.0                                  // Maximum temperature in kelvin
 #define MIN_TEMPERATURE     2700.0                                  // Minimum temperature in kelvin
 #define MID_TEMPERATURE     (MAX_TEMPERATURE + MIN_TEMPERATURE)/2   // Minimum temperature in kelvin
 #define RANGE_TEMPERATURE   (MAX_TEMPERATURE - MIN_TEMPERATURE)     // Range of temperature in kelvin
 // #define INVERSOR            true                                    // Inversor for the temperature
 #define DEBUG_SENSOR        true                                    // Enable debug logs for the temperature sensor
-#define FADE_STEP           450                                      // Fade step in percentage
-#define FADE_INTERVAL      1
+#define FADE_STEP           255                                      // Fade step in percentage
+#define FADE_INTERVAL      2
 #define FADE_ENABLE         1
 
 
@@ -98,6 +98,7 @@ public:
         cool_channel.duty = (uint32_t)dutyCool;
         cool_channel.intr_type = this->fade? LEDC_INTR_FADE_END: LEDC_INTR_DISABLE;
         cool_channel.hpoint = 0;
+
         ledc_channel_config_t warm_channel;
         warm_channel.speed_mode = LEDC_MODE;
         warm_channel.channel = LEDC_CHANNEL_1;
@@ -108,8 +109,6 @@ public:
         warm_channel.hpoint = 0;
         ESP_ERROR_CHECK(ledc_channel_config(&cool_channel));
         ESP_ERROR_CHECK(ledc_channel_config(&warm_channel));
-
-        // this->switchState(this->state);
     }
     ~LedDriver();
     
