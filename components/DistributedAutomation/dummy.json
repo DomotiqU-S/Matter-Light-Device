@@ -26,6 +26,5 @@
 }
 
 // [\"alias\",\"description\",[[\"t1\",2,\"temperature\",0]],[],[p1,\"lumem\",\"20\"]]]
-
 // "[{\"alias\":\"test\",\"description\":\"description\",\"triggers\":[{\"type\":\"TriggerNumericState\",\"alias\":\"TriggerAlias\",\"attribute\":\"temperature\",\"for_s\":10,\"above\":20,\"below\":30}],\"conditions\":[{\"type\":\"ConditionTrigger\",\"alias\":\"ConditionAlias\",\"trigger_alias\":\"TriggerAlias\"}],\"actions\":[{\"type\":\"ActionCallService\",\"alias\":\"ActionAlias\",\"service\":\"light.turn_on\",\"service_data\":\"test\"}]}]"
 // MAX (283): "[{\"alias\":\"test\",\"description\":\"description\",\"triggers\":[{\"type\":\"TriggerNumericState\",\"alias\":\"TriggerAlias\",\"attribute\":\"tempeaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbbbbbbbbbbbbbbbbbbbajhhhhhhhhhhhhhhhhhhhlkllklklkllkhhtlre\",\"for_s\":10,\"above\":20,\"below\":30}]}]"

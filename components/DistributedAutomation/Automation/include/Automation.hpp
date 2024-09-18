@@ -29,6 +29,7 @@ private:
     string last_trigger;
     bool has_triggered;
     bool running;
+    bool starting;
 
     mutex cv_m;
     condition_variable cv;
@@ -49,6 +50,8 @@ public:
     vector<Action *> GetActions();
     vector<Trigger *> GetTriggers();
     bool HasTriggered();
+    bool IsRunning();
+    bool IsStarting();
     string Print();
 
     // Functional

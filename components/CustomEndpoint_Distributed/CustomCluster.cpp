@@ -86,7 +86,7 @@ namespace esp_matter
                 // command::create(cluster, chip::app::Clusters::DistributedDevice::command::set_automations::Id, COMMAND_FLAG_ACCEPTED | COMMAND_FLAG_CUSTOM, set_automations_callback);
 
                 // esp_matter::attribute::val_print(endpoint, 0, 0, data, false);
-
+                DistributedAutomation::Device::Instance();
                 return cluster;
             }
 

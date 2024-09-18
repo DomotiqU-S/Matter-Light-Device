@@ -12,13 +12,13 @@ DistributedAutomation::Device::Device()
 
 DistributedAutomation::Device::~Device()
 {
-    this->running = false;
-    for (auto &automation : this->automations)
-    {
-        automation->Stop();
-        delete automation;
-    }
-    this->automations.clear();
+    // this->running = false;
+    // for (auto &automation : this->automations)
+    // {
+    //     automation->Stop();
+    //     delete automation;
+    // }
+    // this->automations.clear();
 }
 
 bool DistributedAutomation::Device::AddAutomation(Automation *automation)
@@ -53,38 +53,30 @@ void DistributedAutomation::Device::RemoveAutomation(string alias)
 
 void DistributedAutomation::Device::Run()
 {
-    if (this->automations.empty())
-    {
-        return;
-    }
-    this->CreateAutomationsThreads();
     while (this->running)
     {
-        unique_lock<mutex> lock(this->cv_m);
-        for (auto &automation : this->automations)
+        if (!this->automations.empty())
         {
-            if (automation->HasTriggered())
+            for (auto &automation : this->automations)
             {
-                if (automation->Verify())
-                    automation->Do();
+                if (automation->IsStarting())
+                {
+                    thread t(&Automation::Run, automation, &this->cv, &this->cv_m);
+                    t.detach();
+                }
+                if (automation->IsRunning())
+                    if (automation->HasTriggered())
+                        if (automation->Verify())
+                            automation->Do();
             }
         }
-        this->cv.wait(lock);
+        this_thread::sleep_for(chrono::milliseconds(100));
     }
 }
 
 vector<Automation *> DistributedAutomation::Device::GetAutomations()
 {
     return this->automations;
-}
-
-void DistributedAutomation::Device::CreateAutomationsThreads()
-{
-    for (auto automation : this->automations)
-    {
-        thread t(&Automation::Run, automation, &this->cv, &this->cv_m);
-        t.detach();
-    }
 }
 
 void DistributedAutomation::Device::Stop()

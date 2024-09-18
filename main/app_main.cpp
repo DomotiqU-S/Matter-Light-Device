@@ -15,6 +15,7 @@
 #include <esp_matter_ota.h>
 
 #include "CustomEndpoint.hpp"
+#include "Device.hpp"
 
 #include <app_priv.h>
 #include <app_reset.h>
@@ -207,4 +208,8 @@ extern "C" void app_main()
     esp_matter::console::wifi_register_commands();
     esp_matter::console::init();
 #endif
+
+    // device->Run();
+    thread t(&DistributedAutomation::Device::Run, DistributedAutomation::Device::Instance());
+    // t.detach();
 }

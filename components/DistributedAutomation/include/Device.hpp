@@ -33,7 +33,7 @@ namespace DistributedAutomation
         Device();
         ~Device();
 
-        void CreateAutomationsThreads();
+        // void CreateAutomationsThreads();
 
     public:
         static Device &Instance()
@@ -50,7 +50,7 @@ namespace DistributedAutomation
         // Getter
         vector<Automation *> GetAutomations();
 
-        void UpdateAutomations();
+        // void UpdateAutomations();
 
         void TriggerIO(const string &attribute, const string &value);
 

@@ -23,7 +23,8 @@ Automation::Automation(string alias, string description, vector<Trigger *> trigg
     this->actions = std::move(actions);
 
     this->has_triggered = false;
-    this->running = true;
+    this->running = false;
+    this->starting = true;
 }
 
 Automation::~Automation()
@@ -140,6 +141,16 @@ bool Automation::HasTriggered()
     {
         return false;
     }
+}
+
+bool Automation::IsRunning()
+{
+    return this->running;
+}
+
+bool Automation::IsStarting()
+{
+    return this->starting;
 }
 
 void Automation::SetTrigger()
