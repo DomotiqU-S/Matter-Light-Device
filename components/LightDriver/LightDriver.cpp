@@ -13,7 +13,7 @@ esp_err_t LightDriver::set_power(bool power)
 esp_err_t LightDriver::set_brightness(uint8_t brightness)
 {
     ESP_LOGE("LightDriver", "brightness: %d", brightness);
-    return led.setIntensity(brightness);
+    return led.setIntensityTarget(brightness);
 }
 
 esp_err_t LightDriver::set_hue(uint16_t hue)
@@ -45,4 +45,9 @@ led_driver_handle_t LightDriver::init()
 
 esp_err_t LightDriver::set_color(uint16_t x, uint16_t y) {
     return ESP_OK;
+}
+
+void LightDriver::led_routine()
+{
+    led.routine();
 }

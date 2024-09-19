@@ -8,11 +8,10 @@ LedDriver::~LedDriver()
 
 esp_err_t LedDriver::switchState(bool state)
 {
-    ESP_LOGI(TAG_SENSOR, "Switching state to %d", state);
     this->state = state;
     
     if(state) {
-        setIntensity(this->intensity);
+        setIntensityTarget(this->intensity);
     }
     else {
         setLevel(0, 0);
@@ -21,15 +20,11 @@ esp_err_t LedDriver::switchState(bool state)
     return ESP_OK;
 }
 
-esp_err_t LedDriver::setIntensity(uint8_t intensity)            
+esp_err_t LedDriver::setIntensityTarget(uint8_t intensity)            
 {
-    ESP_LOGI(TAG_SENSOR, "Setting intensity to %d", intensity);
-    this->intensity = intensity;
-    this->state = this->intensity > 0 ? true : false;
-    if(!this->state) {
-        return setLevel(0, 0);
-    }
-    return this->setTemperature(this->temperature);
+    this->intensity_target = intensity;
+
+    return ESP_OK;
 }
 
 esp_err_t LedDriver::setTemperature(uint16_t temperature)
@@ -48,18 +43,18 @@ esp_err_t LedDriver::setTemperature(uint16_t temperature)
     
     if (this->temperature == MIN_TEMPERATURE)
     {
-        this->dutyWarm = (uint32_t)0;
-        this->dutyCool = (uint32_t)(MAX_DUTY * (float)((this->intensity) / 254.0));
+        this->target_duty_warm = (uint32_t)0;
+        this->target_duty_cool = (uint32_t)(MAX_DUTY * (float)((this->intensity) / 254.0));
     }
     else if (this->temperature == MAX_TEMPERATURE)
     {
-        this->dutyWarm = (uint32_t)(MAX_DUTY * (float)((this->intensity) / 254.0));
-        this->dutyCool = (uint32_t)0;
+        this->target_duty_warm = (uint32_t)(MAX_DUTY * (float)((this->intensity) / 254.0));
+        this->target_duty_cool = (uint32_t)0;
     }
     else
     {
-        this->dutyWarm = (uint32_t)(MAX_DUTY * (float)((float)((this->intensity) / 254.0)) * (float)((MAX_TEMPERATURE - this->temperature) / RANGE_TEMPERATURE));
-        this->dutyCool = (uint32_t)(MAX_DUTY * (float)((float)((this->intensity) / 254.0)) * (float)((this->temperature - MIN_TEMPERATURE) / RANGE_TEMPERATURE));
+        this->target_duty_warm = (uint32_t)(MAX_DUTY * (float)((float)((this->intensity) / 254.0)) * (float)((MAX_TEMPERATURE - this->temperature) / RANGE_TEMPERATURE));
+        this->target_duty_cool = (uint32_t)(MAX_DUTY * (float)((float)((this->intensity) / 254.0)) * (float)((this->temperature - MIN_TEMPERATURE) / RANGE_TEMPERATURE));
     }
         #ifdef INVERSOR
             this->dutyWarm = MAX_DUTY - this->dutyWarm;
@@ -68,69 +63,23 @@ esp_err_t LedDriver::setTemperature(uint16_t temperature)
         #ifdef DEBUG_SENSOR
             ESP_LOGI(TAG_SENSOR,"intensity: %"PRIu16, this->intensity);
             ESP_LOGI(TAG_SENSOR,"temp: %"PRIu16, this->temperature);
-            ESP_LOGI(TAG_SENSOR,"dutyWarm: %"PRIu32, this->dutyWarm);
-            ESP_LOGI(TAG_SENSOR,"dutyCool: %"PRIu32, this->dutyCool);
+            ESP_LOGI(TAG_SENSOR,"dutyWarm target: %"PRIu32, this->target_duty_cool);
+            ESP_LOGI(TAG_SENSOR,"dutyCool target: %"PRIu32, this->target_duty_cool);
         #endif
-
-    // execute the change
-    ret = setLevel(this->dutyCool, this->dutyWarm);
 
     return ret;
 }
 
 esp_err_t LedDriver::setLevel(uint32_t _dutyCool, uint32_t _dutyWarm)
 {
-    duties->newDutyCool = _dutyCool;
-    duties->newDutyWarm = _dutyWarm;
-    duties->previousDutyCool = previousDutyCool;
-    duties->previousDutyWarm = previousDutyWarm;
-
-    previousDutyCool = _dutyCool;
-    previousDutyWarm = _dutyWarm;
-
-    // Create a task to change the level of the LED
-    BaseType_t res = xTaskCreate(changeLevel, "changeLevel", 2048, (void *) duties, 3, NULL);
-    return res == pdPASS ? ESP_OK : ESP_FAIL;
-}
-
-void LedDriver::changeLevel(void *pvParameters)
-{
-    ledsDuty *duties = (ledsDuty *)pvParameters;
-
-    #ifdef FADE_ENABLE
-        int fadeSteps = FADE_STEP / 10;
-        int fadeStep1 = (duties->newDutyCool - duties->previousDutyCool) / fadeSteps;
-        int fadeStep2 = (duties->newDutyWarm - duties->previousDutyWarm) / fadeSteps;
-
-        for (int i = 0; i < fadeSteps + 1; i++) {
-            uint32_t dutyCycle1 = duties->previousDutyCool + (i * fadeStep1);
-            uint32_t dutyCycle2 = duties->previousDutyWarm + (i * fadeStep2);
-
-            ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_0, dutyCycle1);
-            ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_1, dutyCycle2);
-
-            ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_0);
-            ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_1);
-
-            vTaskDelay(FADE_INTERVAL);
-        }
-    #endif
-
-    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_0, duties->newDutyCool);
-    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_1, duties->newDutyWarm);
-
-    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_0);
-    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_1);
-
-    // Destroy the task after the execution
-    vTaskDelete(NULL);
+    return ESP_OK;
 }
 
 uint32_t LedDriver::getDuty(uint8_t channel) {
     if(channel == 0) {
         return dutyCool;
     }
-    else {
+    else { 
         return dutyWarm;
     }
 }
@@ -141,4 +90,51 @@ uint16_t LedDriver::getTemperature() {
 
 uint8_t LedDriver::getIntensity() {
     return intensity;
+}
+
+void LedDriver::routine() {
+    if(is_update) {
+        if(state) {
+            if(!is_started) {
+                this->step_cool = (target_duty_cool - dutyCool) / 50;
+                this->step_warm = (target_duty_warm - dutyWarm) / 50;
+                this->is_started = true;
+                this->fade_counter = 0;
+            }
+
+            this->dutyCool += step_cool;
+            this->dutyWarm += step_warm;
+
+            this->changePWM(dutyCool, dutyWarm);
+
+            this->fade_counter++;
+
+            if(fade_counter == FADE_DURATION) {
+                this->is_update = false;
+                this->is_started = false;
+
+                this->dutyCool = target_duty_cool;
+                this->dutyWarm = target_duty_warm;
+
+                this->changePWM(dutyCool, dutyWarm);
+            }
+        }
+        else {
+            if(this->dutyCool != 0 || this->dutyWarm != 0) {
+                // clsoe the light
+            }
+        }
+    }
+}
+
+void LedDriver::toggleUpdate() {
+    is_update = true;
+}
+
+void LedDriver::changePWM(uint32_t dutyCool, uint32_t dutyWarm) {
+    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_0, dutyCool);
+    ledc_set_duty(LEDC_MODE, LEDC_CHANNEL_1, dutyWarm);
+
+    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_0);
+    ledc_update_duty(LEDC_MODE, LEDC_CHANNEL_1);
 }

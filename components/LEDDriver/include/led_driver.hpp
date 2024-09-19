@@ -7,9 +7,6 @@
 #include "driver/ledc.h"
 #include "esp_err.h"
 #include "esp_log.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "freertos/semphr.h"
 #include <cmath>
 
 #define TAG_SENSOR          "LED_DRIVER"                            // Tag for the logs
@@ -29,30 +26,38 @@
 #define FADE_STEP           255                                      // Fade step in percentage
 #define FADE_INTERVAL      2
 #define FADE_ENABLE         1
+#define FADE_DURATION      20
 
 
 typedef struct ledsDuty
 {
     int32_t newDutyCool;
     int32_t newDutyWarm;
-    int32_t previousDutyCool;
-    int32_t previousDutyWarm;
+    int32_t target_duty_cool;
+    int32_t target_duty_warm;
 };
 
 class LedDriver
 {
 private:
-    bool fade;
+    bool fade = false, is_update = false, is_started = false;
     ledc_fade_mode_t fade_time;
     esp_err_t ret;
     uint32_t dutyWarm = 0;
     uint32_t dutyCool = 0;
 
-    uint32_t previousDutyCool = 0;
-    uint32_t previousDutyWarm = 0;
+    uint32_t target_duty_cool = 0;
+    uint32_t target_duty_warm = 0;
 
     uint16_t temperature = MID_TEMPERATURE;
-    uint8_t intensity = 100;
+    uint16_t temperature_target = 0;
+    uint8_t intensity = 0;
+    uint8_t intensity_target = 254;
+    uint8_t fade_counter = 0;
+
+    uint16_t step_cool = 0;
+    uint16_t step_warm = 0;
+
     bool state = false;
 
     ledsDuty* duties = (ledsDuty*)malloc(sizeof(ledsDuty));
@@ -65,6 +70,8 @@ private:
      * @return esp_err_t 
      */
     esp_err_t setLevel(uint32_t _dutyCool, uint32_t _dutyWarm);
+
+    void changePWM(uint32_t dutyCool, uint32_t dutyWarm);
 
 public:
     /**
@@ -111,7 +118,7 @@ public:
         ESP_ERROR_CHECK(ledc_channel_config(&warm_channel));
     }
     ~LedDriver();
-    
+
     /**
      * @brief Switch the state of the LED
      * The state of the LED
@@ -126,7 +133,7 @@ public:
      * @param intensity The intensity of the LED in percentage
      * @return esp_err_t the error code
      */
-    esp_err_t setIntensity(uint8_t intensity);
+    esp_err_t setIntensityTarget(uint8_t intensity);
     
     /**
      * @brief Set the temperature of the LED in degrees kelvin
@@ -165,6 +172,14 @@ public:
      * @param pvParameter 
      */
     static void changeLevel(void *pvParameter);
+
+    /**
+     * @brief The function update the value of the PWM
+     * 
+     */
+    void routine();
+
+    void toggleUpdate();
 };
 
 #endif // LED_SENSOR_HPP

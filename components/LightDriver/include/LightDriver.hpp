@@ -51,6 +51,7 @@ public:
     esp_err_t set_hue(uint16_t hue);
     esp_err_t set_saturation(uint8_t saturation);
     esp_err_t set_temperature(uint32_t temperature);
+    void led_routine();
 };
 
 #endif // LIGHT_DRIVER_HPP

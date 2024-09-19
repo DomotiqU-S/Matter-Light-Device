@@ -5,6 +5,9 @@
 #include "LightDriver.hpp"
 #include <stdlib.h>
 #include <string.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/semphr.h"
 
 using namespace chip::app::Clusters;
 using namespace esp_matter;
@@ -13,6 +16,8 @@ static const char *TAG = "io_driver";
 extern uint16_t light_endpoint_id;
 
 LightDriver light_driver(5, 6);
+
+xSemaphoreHandle light_mutex;
 
 esp_err_t set_color_from_attribute(uint32_t attribute_id, esp_matter_attr_val_t *val) {
     esp_err_t err = ESP_OK;
@@ -59,19 +64,29 @@ esp_err_t set_color_from_attribute(uint32_t attribute_id, esp_matter_attr_val_t 
 /* Do any conversions/remapping for the actual value here */
 static esp_err_t app_driver_light_set_power(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
+    esp_err_t err = ESP_OK;
+    if(xSemaphoreTake(light_mutex, portMAX_DELAY) == pdTRUE) {
+        err = light_driver.set_power(val->val.b);
+        xSemaphoreGive(light_mutex);
+    }
     #ifdef DEBUG_DRIVER
         ESP_LOGE(TAG, "power: %d", val->val.b);
     #endif
-    return light_driver.set_power(val->val.b);
+    return err;
 }
 
 static esp_err_t app_driver_light_set_brightness(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
+    esp_err_t err = ESP_OK;
     int value = REMAP_TO_RANGE(val->val.u8, MATTER_BRIGHTNESS, STANDARD_BRIGHTNESS);
+    if(xSemaphoreTake(light_mutex, portMAX_DELAY) == pdTRUE) {
+        err = light_driver.set_brightness((uint16_t)value);
+        xSemaphoreGive(light_mutex);
+    }
     #ifdef DEBUG_DRIVER
         ESP_LOGE(TAG, "brightness: %d", value);
     #endif
-    return light_driver.set_brightness((uint16_t)value); //led_driver_set_brightness(handle, value);
+    return err;
 }
 
 static esp_err_t app_driver_light_set_hue(led_driver_handle_t handle, esp_matter_attr_val_t *val)
@@ -91,7 +106,12 @@ static esp_err_t app_driver_light_set_temperature(led_driver_handle_t handle, es
     // Remap the temperature value to the range supported by the LED driver: Matter Application Cluster Doc: 0-0xFEFF Temperature Range 
     // Default value: 0xFA (4000K)
     uint32_t value = REMAP_TO_RANGE_INVERSE(val->val.u16, STANDARD_TEMPERATURE_FACTOR);
-    return light_driver.set_temperature(value);
+    esp_err_t err = ESP_OK;
+    if(xSemaphoreTake(light_mutex, portMAX_DELAY) == pdTRUE) {
+        light_driver.set_temperature(value);
+        xSemaphoreGive(light_mutex);
+    }
+    return err;
 }
 
 esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_t endpoint_id, uint32_t cluster_id,
@@ -190,5 +210,23 @@ app_driver_handle_t app_driver_light_init()
     /* Initialize led */
     // TODO: Add LED driver 
     led_driver_handle_t handle = light_driver.init();
+    light_mutex = xSemaphoreCreateMutex();
     return (app_driver_handle_t)handle;
+}
+
+void light_routine(void *arg)
+{
+    for(;;) {
+        if(xSemaphoreTake(light_mutex, portMAX_DELAY) == pdTRUE) {
+            light_driver.led_routine();
+            xSemaphoreGive(light_mutex);
+        }
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+    }
+}
+
+esp_err_t app_driver_start_routine()
+{
+    BaseType_t err = xTaskCreate(light_routine, "light_routine", 2048, NULL, 4, NULL);
+    return err == pdPASS ? ESP_OK : ESP_FAIL;
 }

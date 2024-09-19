@@ -4,6 +4,7 @@
 #include <esp_err.h>
 #include <esp_matter.h>
 
+
 #define DEBUG_DRIVER 1
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
@@ -30,6 +31,8 @@
 #define DEFAULT_TEMPERATURE 217
 
 typedef void *app_driver_handle_t;
+
+void light_routine(void *arg);
 
 esp_err_t set_color_from_attribute(uint32_t attribute_id, esp_matter_attr_val_t *val);
 
@@ -77,6 +80,8 @@ esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_
  * @return error in case of failure.
  */
 esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id);
+
+esp_err_t app_driver_start_routine();
 
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #define ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG()                                           \
