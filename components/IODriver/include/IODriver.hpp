@@ -43,16 +43,7 @@ esp_err_t set_color_from_attribute(uint32_t attribute_id, esp_matter_attr_val_t 
  * @return Handle on success.
  * @return NULL in case of failure.
  */
-app_driver_handle_t app_driver_light_init();
-
-/** Initialize the button driver
- *
- * This initializes the button driver associated with the selected board.
- *
- * @return Handle on success.
- * @return NULL in case of failure.
- */
-app_driver_handle_t app_driver_button_init();
+app_driver_handle_t app_driver_light_init(uint8_t driver_type);
 
 /** Driver Update
  *

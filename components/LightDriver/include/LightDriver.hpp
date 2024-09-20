@@ -83,6 +83,16 @@ public:
      */
     virtual uint16_t get_y() = 0;
 
+    // Setters
+
+    /**
+     * @brief Set the driver type
+     * 
+     * @param driver 
+     * @return esp_err_t 
+     */
+    esp_err_t set_driver(uint8_t driver_type);
+
     /**
      * @brief Set the power value representing the state of the light
      * 

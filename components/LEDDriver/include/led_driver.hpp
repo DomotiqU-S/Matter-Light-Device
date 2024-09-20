@@ -12,9 +12,7 @@
 
 #define TAG_SENSOR          "LED_DRIVER"                            // Tag for the logs
 #define LEDC_TIMER          LEDC_TIMER_0                            // LEDC timer
-#define LEDC_MODE           LEDC_LOW_SPEED_MODE                     // LEDC speed mode
-#define LEDC_WARM           4                                       // Define the output GPIO
-#define LEDC_COOL           5                                       // Define the output GPIO
+#define LEDC_MODE           LEDC_LOW_SPEED_MODE                     // LEDC speed mode                                      // Define the output GPIO
 #define LEDC_DUTY_RES       LEDC_TIMER_10_BIT                       // Set duty resolution to 10 bits
 #define MAX_DUTY            (uint32_t)1024                          // Maximum duty for 10 bits
 #define LEDC_FREQUENCY      (uint32_t)20000                         // Frequency in Hertz. Set frequency at 20 kHz
@@ -36,8 +34,8 @@ private:
     ledc_fade_mode_t fade_time;
     esp_err_t ret;
     
-    int32_t dutyWarm = 0;
-    int32_t dutyCool = 0;
+    int32_t duty_warm = 0;
+    int32_t duty_cool = 0;
     int32_t target_duty_cool = 0;
     int32_t target_duty_warm = 0;
 
@@ -49,12 +47,13 @@ private:
     uint8_t intensity = 0;
     uint8_t intensity_target = 254;
     uint8_t fade_counter = 0;
+    uint8_t driver_led_type = 2; // 0: ON_OFF, 1: DIMMABLE, 2: COLOR_TEMPERATURE, 3: COLOR
 
     led_driver_handle_t handle;
 
     bool state = false;
 
-    void changePWM(uint32_t dutyCool, uint32_t dutyWarm);
+    void changePWM(uint32_t duty_cool, uint32_t duty_warm);
 
     void updateLoop();
 
@@ -68,7 +67,7 @@ public:
      * @param intensity The intensity of the LED in percentage
      * @param temperature The temperature of the LED in degrees kelvin
      */
-    LedDriver(int cool_pin = LEDC_COOL, int warm_pin = LEDC_WARM, uint32_t frequency = LEDC_FREQUENCY, uint16_t intensity = 0, uint16_t temperature = 4600, bool initial_state = false)
+    LedDriver(int cool_pin, int warm_pin, uint32_t frequency = LEDC_FREQUENCY, uint16_t intensity = 0, uint16_t temperature = 4600, bool initial_state = false)
     {
         this->intensity = intensity;
         this->temperature = temperature;
@@ -87,7 +86,7 @@ public:
         cool_channel.channel = LEDC_CHANNEL_0;
         cool_channel.timer_sel = LEDC_TIMER;
         cool_channel.gpio_num = cool_pin;
-        cool_channel.duty = (uint32_t)dutyCool;
+        cool_channel.duty = (uint32_t)duty_cool;
         cool_channel.intr_type = this->fade? LEDC_INTR_FADE_END: LEDC_INTR_DISABLE;
         cool_channel.hpoint = 0;
 
@@ -96,20 +95,13 @@ public:
         warm_channel.channel = LEDC_CHANNEL_1;
         warm_channel.timer_sel = LEDC_TIMER;
         warm_channel.gpio_num = warm_pin;
-        warm_channel.duty = (uint32_t)dutyWarm;
+        warm_channel.duty = (uint32_t)duty_warm;
         warm_channel.intr_type = this->fade? LEDC_INTR_FADE_END: LEDC_INTR_DISABLE;
         warm_channel.hpoint = 0;
         ESP_ERROR_CHECK(ledc_channel_config(&cool_channel));
         ESP_ERROR_CHECK(ledc_channel_config(&warm_channel));
     }
     ~LedDriver();
-
-    /**
-     * @brief This is the task that will change the level of the LED simultaneously
-     * 
-     * @param pvParameter 
-     */
-    static void changeLevel(void *pvParameter);
 
     /**
      * @brief The function update the value of the PWM
@@ -136,6 +128,8 @@ public:
     uint16_t get_x();
 
     uint16_t get_y();
+
+    esp_err_t set_driver(uint8_t driver_type);
 
     esp_err_t set_power(bool power);
 

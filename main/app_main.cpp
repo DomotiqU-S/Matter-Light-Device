@@ -143,7 +143,7 @@ extern "C" void app_main()
     nvs_flash_init();
 
     /* Initialize driver */
-    app_driver_handle_t light_handle = app_driver_light_init();
+    app_driver_handle_t light_handle = app_driver_light_init((uint8_t)LIGHT_TYPE);
 
     /* Create a Matter node and add the mandatory Root Node device type on endpoint 0 */
     node::config_t node_config;

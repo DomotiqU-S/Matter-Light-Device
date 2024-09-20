@@ -205,11 +205,11 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
     return err;
 }
 
-app_driver_handle_t app_driver_light_init()
+app_driver_handle_t app_driver_light_init(uint8_t driver_type)
 {
     /* Initialize led */
     led_driver_handle_t handle = light_driver.init();
-    light_mutex = xSemaphoreCreateMutex();
+    light_driver.set_driver(driver_type);
     app_driver_start_routine();
     return (app_driver_handle_t)handle;
 }
