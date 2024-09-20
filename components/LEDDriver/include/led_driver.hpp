@@ -36,15 +36,15 @@ private:
     ledc_fade_mode_t fade_time;
     esp_err_t ret;
     
-    uint32_t dutyWarm = 0;
-    uint32_t dutyCool = 0;
-    uint32_t target_duty_cool = 0;
-    uint32_t target_duty_warm = 0;
+    int32_t dutyWarm = 0;
+    int32_t dutyCool = 0;
+    int32_t target_duty_cool = 0;
+    int32_t target_duty_warm = 0;
 
     uint16_t temperature = MID_TEMPERATURE;
     uint16_t temperature_target = 0;
-    uint16_t step_cool = 0;
-    uint16_t step_warm = 0;
+    int16_t step_cool = 0;
+    int16_t step_warm = 0;
 
     uint8_t intensity = 0;
     uint8_t intensity_target = 254;
@@ -68,7 +68,7 @@ public:
      * @param intensity The intensity of the LED in percentage
      * @param temperature The temperature of the LED in degrees kelvin
      */
-    LedDriver(int cool_pin = LEDC_COOL, int warm_pin = LEDC_WARM, uint32_t frequency = LEDC_FREQUENCY, uint16_t intensity = 50, uint16_t temperature = 4600, bool initial_state = false)
+    LedDriver(int cool_pin = LEDC_COOL, int warm_pin = LEDC_WARM, uint32_t frequency = LEDC_FREQUENCY, uint16_t intensity = 0, uint16_t temperature = 4600, bool initial_state = false)
     {
         this->intensity = intensity;
         this->temperature = temperature;
