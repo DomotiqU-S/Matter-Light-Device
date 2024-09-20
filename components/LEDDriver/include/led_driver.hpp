@@ -8,6 +8,7 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include <cmath>
+#include "LightDriver.hpp"
 
 #define TAG_SENSOR          "LED_DRIVER"                            // Tag for the logs
 #define LEDC_TIMER          LEDC_TIMER_0                            // LEDC timer
@@ -26,52 +27,36 @@
 #define FADE_STEP           255                                      // Fade step in percentage
 #define FADE_INTERVAL      2
 #define FADE_ENABLE         1
-#define FADE_DURATION      20
+#define FADE_DURATION      1000 / 50 // the maximum time of fade is 1 second and the PWM is updated 50 times per second: so generally the formula is (total time / update per second)
 
-
-typedef struct ledsDuty
-{
-    int32_t newDutyCool;
-    int32_t newDutyWarm;
-    int32_t target_duty_cool;
-    int32_t target_duty_warm;
-};
-
-class LedDriver
+class LedDriver : public LightDriver
 {
 private:
     bool fade = false, is_update = false, is_started = false;
     ledc_fade_mode_t fade_time;
     esp_err_t ret;
+    
     uint32_t dutyWarm = 0;
     uint32_t dutyCool = 0;
-
     uint32_t target_duty_cool = 0;
     uint32_t target_duty_warm = 0;
 
     uint16_t temperature = MID_TEMPERATURE;
     uint16_t temperature_target = 0;
+    uint16_t step_cool = 0;
+    uint16_t step_warm = 0;
+
     uint8_t intensity = 0;
     uint8_t intensity_target = 254;
     uint8_t fade_counter = 0;
 
-    uint16_t step_cool = 0;
-    uint16_t step_warm = 0;
+    led_driver_handle_t handle;
 
     bool state = false;
 
-    ledsDuty* duties = (ledsDuty*)malloc(sizeof(ledsDuty));
-
-    /**
-     * @brief Set the Level of the channel without changing the value of the channel
-     * 
-     * @param dutyCool new duty for the cool channel
-     * @param dutyWarm new duty for the warm channel
-     * @return esp_err_t 
-     */
-    esp_err_t setLevel(uint32_t _dutyCool, uint32_t _dutyWarm);
-
     void changePWM(uint32_t dutyCool, uint32_t dutyWarm);
+
+    void updateLoop();
 
 public:
     /**
@@ -120,53 +105,6 @@ public:
     ~LedDriver();
 
     /**
-     * @brief Switch the state of the LED
-     * The state of the LED
-     * @param state The state of the LED
-     * @return esp_err_t the error code
-     */
-    esp_err_t switchState(bool state);
-    
-    /**
-     * @brief Set the intensity of the LED
-     * The intensity of the LED in percentage
-     * @param intensity The intensity of the LED in percentage
-     * @return esp_err_t the error code
-     */
-    esp_err_t setIntensityTarget(uint8_t intensity);
-    
-    /**
-     * @brief Set the temperature of the LED in degrees kelvin
-     * The temperature color of the light bulb.
-     * MAX 6500K
-     * MIN 2700K
-     * @param temperature The temperature of the LED in degrees kelvin
-     * @return esp_err_t the error code
-     */
-    esp_err_t setTemperature(uint16_t temperature);
-    
-    /**
-     * @brief Get the temperature of the LED
-     * The temperature color of the light bulb.
-     * @return uint16_t The temperature of the LED in degrees kelvin
-     */
-    uint16_t getTemperature();
-    
-    /**
-     * @brief Get the intensity of the LED
-     * The intensity of the LED in percentage
-     * @return uint16_t The intensity of the LED in percentage
-     */
-    uint8_t getIntensity();
-    
-    /**
-     * @brief Get the duty of the LED
-     * The duty of the LED in percentage
-     * @return uint8_t The duty of the LED in percentage
-     */
-    uint32_t getDuty(uint8_t channel);
-
-    /**
      * @brief This is the task that will change the level of the LED simultaneously
      * 
      * @param pvParameter 
@@ -180,6 +118,38 @@ public:
     void routine();
 
     void toggleUpdate();
+
+    // Virtual functions from the LightDriver class
+
+    led_driver_handle_t init();
+
+    uint16_t get_temperature();
+
+    uint8_t get_intensity();
+
+    uint32_t get_duty(uint8_t channel);
+
+    uint16_t get_hue();
+
+    uint8_t get_saturation();
+
+    uint16_t get_x();
+
+    uint16_t get_y();
+
+    esp_err_t set_power(bool power);
+
+    esp_err_t set_brightness(uint8_t brightness);
+
+    esp_err_t set_color(uint16_t x, uint16_t y);
+
+    esp_err_t set_hue(uint16_t hue);
+
+    esp_err_t set_saturation(uint8_t saturation);
+
+    esp_err_t set_temperature(uint32_t temperature);
+
+    void led_routine();
 };
 
 #endif // LED_SENSOR_HPP

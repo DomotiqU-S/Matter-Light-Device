@@ -2,7 +2,7 @@
 #include <esp_log.h>
 #include "IODriver.hpp"
 #include <esp_matter.h>
-#include "LightDriver.hpp"
+#include "led_driver.hpp"
 #include <stdlib.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
@@ -15,7 +15,7 @@ using namespace esp_matter;
 static const char *TAG = "io_driver";
 extern uint16_t light_endpoint_id;
 
-LightDriver light_driver(5, 6);
+LedDriver light_driver(5, 6);
 
 xSemaphoreHandle light_mutex;
 
@@ -65,12 +65,11 @@ esp_err_t set_color_from_attribute(uint32_t attribute_id, esp_matter_attr_val_t 
 static esp_err_t app_driver_light_set_power(led_driver_handle_t handle, esp_matter_attr_val_t *val)
 {
     esp_err_t err = ESP_OK;
-    if(xSemaphoreTake(light_mutex, portMAX_DELAY) == pdTRUE) {
-        err = light_driver.set_power(val->val.b);
-        xSemaphoreGive(light_mutex);
-    }
+    
+    err = light_driver.set_power(val->val.b);
+    
     #ifdef DEBUG_DRIVER
-        ESP_LOGE(TAG, "power: %d", val->val.b);
+        ESP_LOGI(TAG, "power: %d", val->val.b);
     #endif
     return err;
 }
@@ -79,12 +78,11 @@ static esp_err_t app_driver_light_set_brightness(led_driver_handle_t handle, esp
 {
     esp_err_t err = ESP_OK;
     int value = REMAP_TO_RANGE(val->val.u8, MATTER_BRIGHTNESS, STANDARD_BRIGHTNESS);
-    if(xSemaphoreTake(light_mutex, portMAX_DELAY) == pdTRUE) {
-        err = light_driver.set_brightness((uint16_t)value);
-        xSemaphoreGive(light_mutex);
-    }
+
+    err = light_driver.set_brightness((uint16_t)value);
+
     #ifdef DEBUG_DRIVER
-        ESP_LOGE(TAG, "brightness: %d", value);
+        ESP_LOGI(TAG, "brightness: %d", value);
     #endif
     return err;
 }
@@ -107,10 +105,12 @@ static esp_err_t app_driver_light_set_temperature(led_driver_handle_t handle, es
     // Default value: 0xFA (4000K)
     uint32_t value = REMAP_TO_RANGE_INVERSE(val->val.u16, STANDARD_TEMPERATURE_FACTOR);
     esp_err_t err = ESP_OK;
-    if(xSemaphoreTake(light_mutex, portMAX_DELAY) == pdTRUE) {
-        light_driver.set_temperature(value);
-        xSemaphoreGive(light_mutex);
-    }
+
+    light_driver.set_temperature(value);
+    
+    #ifdef DEBUG_DRIVER
+        ESP_LOGI(TAG, "temperature: %lu", value);
+    #endif
     return err;
 }
 
@@ -127,7 +127,7 @@ esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_
                     ESP_LOGI(TAG, "OnOff::Id");
                 #endif
                 if(attribute_id == OnOff::Attributes::OnOff::Id) {
-                    err = light_driver.set_power(val->val.b);
+                    err = app_driver_light_set_power(handle, val);
                 }
                 break;
             case LevelControl::Id:
@@ -208,9 +208,9 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
 app_driver_handle_t app_driver_light_init()
 {
     /* Initialize led */
-    // TODO: Add LED driver 
     led_driver_handle_t handle = light_driver.init();
     light_mutex = xSemaphoreCreateMutex();
+    app_driver_start_routine();
     return (app_driver_handle_t)handle;
 }
 
