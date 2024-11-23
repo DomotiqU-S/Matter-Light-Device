@@ -9,13 +9,15 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 
+#include "sdkconfig.h"
+
 using namespace chip::app::Clusters;
 using namespace esp_matter;
 
 static const char *TAG = "io_driver";
 extern uint16_t light_endpoint_id;
 
-LedDriver light_driver(5, 6);
+LedDriver light_driver(CONFIG_COOL_PIN_PWM, CONFIG_WARM_PIN_PWM);
 
 xSemaphoreHandle light_mutex;
 
@@ -167,7 +169,6 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
     /* Setting brightness */
     cluster = cluster::get(endpoint, LevelControl::Id);
     attribute = attribute::get(cluster, LevelControl::Attributes::CurrentLevel::Id);
-    // attribute::get_val(attribute, &val);
     val.val.u8 = DEFAULT_BRIGHTNESS;
     err |= app_driver_light_set_brightness(handle, &val);
 
@@ -176,22 +177,10 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
     attribute = attribute::get(cluster, ColorControl::Attributes::ColorMode::Id);
     attribute::get_val(attribute, &val);
 
-    if (val.val.u8 == (uint8_t)ColorControl::ColorMode::kCurrentHueAndCurrentSaturation) {
-        /* Setting hue */
-        attribute = attribute::get(cluster, ColorControl::Attributes::CurrentHue::Id);
-        // attribute::get_val(attribute, &val);
-        val.val.u8 = DEFAULT_HUE;
-        err |= app_driver_light_set_hue(handle, &val);
-        /* Setting saturation */
-        attribute = attribute::get(cluster, ColorControl::Attributes::CurrentSaturation::Id);
-        // attribute::get_val(attribute, &val);
-        val.val.u8 = DEFAULT_SATURATION;
-        err |= app_driver_light_set_saturation(handle, &val);
-    } 
-    else if (val.val.u8 == (uint8_t)ColorControl::ColorMode::kColorTemperature) {
+    if (val.val.u8 == (uint8_t)ColorControl::ColorMode::kColorTemperature) {
+       
         /* Setting temperature */
         attribute = attribute::get(cluster, ColorControl::Attributes::ColorTemperatureMireds::Id);
-        // attribute::get_val(attribute, &val);
         val.val.u16 = DEFAULT_TEMPERATURE;
         err |= app_driver_light_set_temperature(handle, &val);
     }
@@ -200,6 +189,7 @@ esp_err_t app_driver_light_set_defaults(uint16_t endpoint_id)
     cluster = cluster::get(endpoint, OnOff::Id);
     attribute = attribute::get(cluster, OnOff::Attributes::OnOff::Id);
     attribute::get_val(attribute, &val);
+    val.val.b = DEFAULT_POWER;
     err |= app_driver_light_set_power(handle, &val);
 
     return err;
@@ -217,16 +207,13 @@ app_driver_handle_t app_driver_light_init(uint8_t driver_type)
 void light_routine(void *arg)
 {
     for(;;) {
-        if(xSemaphoreTake(light_mutex, portMAX_DELAY) == pdTRUE) {
-            light_driver.led_routine();
-            xSemaphoreGive(light_mutex);
-        }
+        light_driver.led_routine();
         vTaskDelay(50 / portTICK_PERIOD_MS);
     }
 }
 
 esp_err_t app_driver_start_routine()
 {
-    BaseType_t err = xTaskCreate(light_routine, "light_routine", 2048, NULL, 4, NULL);
+    BaseType_t err = xTaskCreate(light_routine, "light_routine", 4096, NULL, 4, NULL);
     return err == pdPASS ? ESP_OK : ESP_FAIL;
 }

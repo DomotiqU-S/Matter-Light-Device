@@ -25,10 +25,10 @@
 
 /** Default attribute values used during initialization */
 #define DEFAULT_POWER false
-#define DEFAULT_BRIGHTNESS 60
+#define DEFAULT_BRIGHTNESS 100
 #define DEFAULT_HUE 140
 #define DEFAULT_SATURATION 216
-#define DEFAULT_TEMPERATURE 217
+#define DEFAULT_TEMPERATURE 200
 
 typedef void *app_driver_handle_t;
 

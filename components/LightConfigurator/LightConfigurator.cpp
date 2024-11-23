@@ -45,7 +45,7 @@ esp_err_t configureLight(uint8_t flags, void *priv_data, esp_matter::node_t *nod
         // Color settings
         temp_config.color_control.color_mode = (uint8_t)ColorControl::ColorMode::kColorTemperature;
         temp_config.color_control.enhanced_color_mode = (uint8_t)ColorControl::ColorMode::kColorTemperature;
-        temp_config.color_control.color_temperature.startup_color_temperature_mireds = 217; // 217 is 4600 K
+        temp_config.color_control.color_temperature.startup_color_temperature_mireds = 200; // 217 is 4600 K
 
         color_temperature_light::add(priv_endpoint, &temp_config);
 

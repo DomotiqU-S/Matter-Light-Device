@@ -7,14 +7,16 @@
 #include <esp_matter_console.h>
 #include <esp_matter_ota.h>
 
+#include "sdkconfig.h"
+
 #define ON_OFF_TYPE_LIGHT 0
 #define DIMMABLE_TYPE_LIGHT 1
 #define COLOR_TEMPERATURE_TYPE_LIGHT 2
 #define COLOR_TYPE_LIGHT 3
 
-#define LIGHT_TYPE DIMMABLE_TYPE_LIGHT
+#define LIGHT_TYPE CONFIG_LIGHT_TYPE
 
-#define DEFAULT_LEVEL_LIGHT 127
+#define DEFAULT_LEVEL_LIGHT 254
 
 using namespace esp_matter;
 using namespace esp_matter::attribute;

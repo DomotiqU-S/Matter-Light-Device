@@ -1,0 +1,43 @@
+
+menu "Settings Light Device"
+
+    menu "Light Hardware"
+        config COOL_PIN_PWM
+            int "Pin to control the cool light"
+            range 0 27
+            default 0
+            help
+                This is the pin to generate de PWM signal for the cool channel
+
+        config WARM_PIN_PWM
+            int "Pin to control the warm light"
+            range 0 27
+            default 10
+            help
+                This is the pin to generate de PWM signal for the warm channel
+
+        config LIGHT_TYPE
+            int "Type of light"
+            default 2
+            range 0 3
+            help
+               Select the type of light 
+    endmenu
+
+    menu "Light fade"
+        config FADE_ENBALE
+            bool "Enable fade"
+            default y
+            help
+                Enable fade for the light
+
+        config FADE_TIME
+            int "Fade resolution"
+            range 0 100
+            default 50
+            depends on FADE_ENBALE
+            help
+                The duration of the fade: 1000 / RES time in ms
+    endmenu
+
+endmenu

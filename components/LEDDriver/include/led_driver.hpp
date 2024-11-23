@@ -10,6 +10,8 @@
 #include <cmath>
 #include "LightDriver.hpp"
 
+#include "sdkconfig.h"
+
 #define TAG_SENSOR          "LED_DRIVER"                            // Tag for the logs
 #define LEDC_TIMER          LEDC_TIMER_0                            // LEDC timer
 #define LEDC_MODE           LEDC_LOW_SPEED_MODE                     // LEDC speed mode                                      // Define the output GPIO
@@ -24,8 +26,8 @@
 #define DEBUG_SENSOR        true                                    // Enable debug logs for the temperature sensor
 #define FADE_STEP           255                                      // Fade step in percentage
 #define FADE_INTERVAL      2
-#define FADE_ENABLE         1
-#define FADE_DURATION      1000 / 50 // the maximum time of fade is 1 second and the PWM is updated 50 times per second: so generally the formula is (total time / update per second)
+#define FADE_ENABLE         CONFIG_FADE_ENBALE
+#define FADE_DURATION      1000 / CONFIG_FADE_TIME // the maximum time of fade is 1 second and the PWM is updated 50 times per second: so generally the formula is (total time / update per second)
 
 class LedDriver : public LightDriver
 {
