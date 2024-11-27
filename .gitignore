@@ -14,3 +14,4 @@ sdkconfig
 sdkconfig.old
 .vscode/
 .managed_components/
+managed_components/
