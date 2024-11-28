@@ -5,14 +5,14 @@ menu "Settings Light Device"
         config COOL_PIN_PWM
             int "Pin to control the cool light"
             range 0 27
-            default 0
+            default 10
             help
                 This is the pin to generate de PWM signal for the cool channel
 
         config WARM_PIN_PWM
             int "Pin to control the warm light"
             range 0 27
-            default 10
+            default 0
             help
                 This is the pin to generate de PWM signal for the warm channel
 
