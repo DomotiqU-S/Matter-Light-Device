@@ -123,16 +123,14 @@ esp_err_t LedDriver::set_power(bool power) {
 }
 
 esp_err_t LedDriver::set_brightness(uint8_t brightness) {
-    #if driver_le_type == 0
+    if (driver_led_type == 0)
         return ESP_ERR_NOT_ALLOWED;
-    #else
-        this->intensity_target = brightness;
-        this->set_temperature(this->temperature);
+    this->intensity_target = brightness;
+    this->set_temperature(this->temperature);
 
-        this->toggleUpdate();
+    this->toggleUpdate();
 
-        return ESP_OK;
-    #endif
+    return ESP_OK;
 }
 
 esp_err_t LedDriver::set_color(uint16_t x, uint16_t y) {
@@ -167,12 +165,12 @@ esp_err_t LedDriver::set_temperature(uint32_t temperature) {
         }
         else {
             this->temperature = (int32_t)temperature;
-            ESP_LOGI(TAG_SENSOR,"temperature: %d", this->temperature);
+            /*ESP_LOGI(TAG_SENSOR,"temperature: %d", this->temperature);*/
 
             this->target_duty_warm = (int32_t)(MAX_DUTY * (float)((float)((this->intensity_target) / 254.0)) * (float)((MAX_TEMPERATURE - this->temperature) / RANGE_TEMPERATURE));
-            ESP_LOGI(TAG_SENSOR,"target_duty_warm: %lu", this->target_duty_warm);
+            /*ESP_LOGI(TAG_SENSOR,"target_duty_warm: %lu", this->target_duty_warm);*/
             this->target_duty_cool = (int32_t)(MAX_DUTY * (float)((float)((this->intensity_target) / 254.0)) * (float)((this->temperature - MIN_TEMPERATURE) / RANGE_TEMPERATURE));
-            ESP_LOGI(TAG_SENSOR,"target_duty_cool: %lu", this->target_duty_cool);
+            /*ESP_LOGI(TAG_SENSOR,"target_duty_cool: %lu", this->target_duty_cool);*/
         }
         
         #ifdef INVERSOR
@@ -180,18 +178,18 @@ esp_err_t LedDriver::set_temperature(uint32_t temperature) {
             this->duty_cool = MAX_DUTY - this->duty_cool;
         #endif
         #ifdef DEBUG_SENSOR
-            ESP_LOGI(TAG_SENSOR,"intensity: %"PRIu16, this->intensity_target);
-            ESP_LOGI(TAG_SENSOR,"temp: %"PRIu16, this->temperature);
-            ESP_LOGI(TAG_SENSOR,"duty_warm target: %"PRIu32, this->target_duty_warm);
-            ESP_LOGI(TAG_SENSOR,"duty_cool target: %"PRIu32, this->target_duty_cool);
+            /*ESP_LOGI(TAG_SENSOR,"intensity: %"PRIu16, this->intensity_target);*/
+            /*ESP_LOGI(TAG_SENSOR,"temp: %"PRIu16, this->temperature);*/
+            /*ESP_LOGI(TAG_SENSOR,"duty_warm target: %"PRIu32, this->target_duty_warm);*/
+            /*ESP_LOGI(TAG_SENSOR,"duty_cool target: %"PRIu32, this->target_duty_cool);*/
         #endif
 
         this->toggleUpdate();
 
         // Log the temperature and the value of is_update
         #ifdef DEBUG_SENSOR
-            ESP_LOGI(TAG_SENSOR,"temperature: %d", this->temperature);
-            ESP_LOGI(TAG_SENSOR,"is_update: %d", this->is_update);
+            /*ESP_LOGI(TAG_SENSOR,"temperature: %d", this->temperature);*/
+            /*ESP_LOGI(TAG_SENSOR,"is_update: %d", this->is_update);*/
         #endif
 
         return ret;
